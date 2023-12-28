@@ -9,13 +9,29 @@ export interface SpriteProps {
   img?: HTMLImageElement | undefined,
   scale?: number,
   frames?: number, // Total Frames
-  offset?: Coords, // Sprite Offset,
-  moveable?: boolean // Can Sprite Move?
+  moveable?: boolean, // Can Sprite Move?
+  velocity?: number, // Move Velocity
+  moving?: boolean, // Actually Moving
+  sprites?: {[key: string]: HTMLImageElement};
+  animated?: boolean, // Monster Animation Default,
+  hold?: number,
+  enemy?: boolean, // Sprite is Enemy
+  ally?: boolean, // Sprite is Ally
+  opacity?: number // Battle Opacity
+  stats?: MonsterStats
 }
 
 export interface BoundaryProps {
   pos: Coords, // Position
   width?: number,
   height?: number,
-  offset?: Coords, // Sprite Offset,
+  velocity?: number, // Move Velocity
+  moveable?: boolean, // Can Sprite Move?
+}
+
+export interface MonsterStats {
+  health: number;
+  level: number;
+  gender: 'male' | 'female',
+  name: string;
 }

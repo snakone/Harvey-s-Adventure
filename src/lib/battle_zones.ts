@@ -1,16 +1,16 @@
 import Boundary from "../classes/boundary";
-import { createCollisionMap } from "../utils/collisions";
+import { createBattleZonesMap } from "../utils/battle_zones";
 import { RECT_WIDTH, RECT_HEIGHT } from "../utils/constants";
 import { BoundaryProps } from "../utils/interfaces";
 import { OFFSET_X, OFFSET_Y } from "./sprites";
 
-const BOUNDARIES: Boundary[] = buildBoundaries();
+const BATTLE_ZONES: Boundary[] = buildBattleZones();
 
-export function buildBoundaries(): Boundary[] {
-  const collisionMap: number[][] = createCollisionMap();
+export function buildBattleZones(): Boundary[] {
+  const battleZonesMap: number[][] = createBattleZonesMap();
   const array: Boundary[] = [];
 
-  collisionMap.forEach((row: number[], i: number) => {
+  battleZonesMap.forEach((row: number[], i: number) => {
     row.forEach((symbol: number, j: number) => {
       if (symbol === 1) {
         const boundary: BoundaryProps = {
@@ -18,7 +18,7 @@ export function buildBoundaries(): Boundary[] {
             x: j * RECT_WIDTH + OFFSET_X,
             y: i * RECT_HEIGHT + OFFSET_Y
           },
-          moveable: true
+          moveable: false
         }
         array.push(new Boundary(boundary));
       }
@@ -28,4 +28,4 @@ export function buildBoundaries(): Boundary[] {
   return array;
 }
 
-export default BOUNDARIES;
+export default BATTLE_ZONES;
