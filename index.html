@@ -16,18 +16,27 @@
     <div class="battle-panel-enemy animated">
 
     </div>
+    <div class="battle-panel-ally animated">
+
+    </div>
     <div id="battle-panel">
-      <h1>What will you do?</h1>
-      <div class="batte-start-selection animated">
-        <button value="true">Fight</button>
-        <button value="false">Scape</button>
+      <div style="height: 100%;">
+        <h1>What will you do?</h1>
+        <div class="batte-start-selection">
+          <button value="true" class="animated fadeIn">Fight</button>
+          <button value="false">Scape</button>
+        </div>
+        <div class="battle-fight-panel">
+          <button value="1" class="animated fadeIn">Attack 1</button>
+          <button value="2" class="animated fadeIn">Attack 2</button>
+          <button value="3" class="animated fadeIn">Attack 3</button>
+          <button value="4" class="animated fadeIn">Attack 4</button>
+          <button value="back" class="animated fadeIn">Back</button>
+        </div>
       </div>
-      <div class="battle-fight-panel animated">
-        <button value="1">Attack 1</button>
-        <button value="2">Attack 2</button>
-        <button value="3">Attack 3</button>
-        <button value="4">Attack 4</button>
-        <button value="back">Back</button>
+
+      <div id="info-battle-dialog">
+        
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>

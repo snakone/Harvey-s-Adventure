@@ -1,9 +1,13 @@
-import { BATTLE_SPRITES } from "../lib/sprites";
+import { MONSTER_ATTACKS } from "../lib/attacks";
+import { MONSTER_SPRITES } from "../lib/monsters";
+import gsap from "gsap";
+
+export const ATTACK_QUEQUE: any[] = []
 
 export function createBattle(): void {
   const panel: HTMLElement | null = document.querySelector('.batte-start-selection');
-  const ally = BATTLE_SPRITES.find(sprite => sprite.props.ally);
-  const enemy = BATTLE_SPRITES.find(sprite => sprite.props.enemy);
+  const ally = MONSTER_SPRITES.find(monster => monster.props.ally);
+  const enemy = MONSTER_SPRITES.find(monster => monster.props.enemy);
   
   if (panel) {
     panel.addEventListener('click', (e: any) => {
@@ -17,23 +21,53 @@ export function createBattle(): void {
           fightPanel.style.display = 'grid';
 
           fightPanel.addEventListener('click', (e: any) => {
-            if (e.target.tagName === 'BUTTON' && e.target.value === '1' && ally) {
+            if (e.target.tagName === 'BUTTON' && e.target.value === '1' && ally && enemy) {
               ally.attack({
-                data: {
-                  name: 'Tackle',
-                  power: 10,
-                  type: 'Normal'
-                },
+                data: MONSTER_ATTACKS.Tackle,
                 recipent: enemy
-              })
+              });
+              ATTACK_QUEQUE.push(() => {
+                enemy.attack({
+                  data: MONSTER_ATTACKS.Tackle,
+                  recipent: ally
+                });
+              });
+            } else if (e.target.tagName === 'BUTTON' && e.target.value === '2' && ally && enemy) {
+              ally.attack({
+                data: MONSTER_ATTACKS.Fireball,
+                recipent: enemy
+              });
+
+              ATTACK_QUEQUE.push(() => {
+                enemy.attack({
+                  data: MONSTER_ATTACKS.Tackle,
+                  recipent: ally
+                });
+              });
+
+              ATTACK_QUEQUE.push(() => {
+                enemy.attack({
+                  data: MONSTER_ATTACKS.Fireball,
+                  recipent: ally
+                });
+              });
             } else if (e.target.tagName === 'BUTTON' && e.target.value === 'back') {
               fightPanel.classList.remove('fadeIn');
               fightPanel.style.display = 'none';
               panel.classList.add('fadeIn');
               panel.style.display = 'grid';
+            } else if (e.target.tagName === 'BUTTON' && e.target.value === '3' && ally && enemy) {
+              enemy.attack({
+                data: MONSTER_ATTACKS.Fireball,
+                recipent: ally
+              });
             }
           });
         }
+      } else if(e.target.tagName === 'BUTTON' && e.target.value === 'false') {
+        gsap.to('.battle-panel-enemy', { display: 'none' });
+        gsap.to('.battle-panel-ally', { display: 'none' });
+        gsap.to('#battle-panel', { opacity: 0 });
       }
     })
   }

@@ -1,7 +1,6 @@
-import { DEFAULT_HEIGHT, DEFAULT_WIDTH, canvas } from "../classes/canvas";
+import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "../classes/canvas";
 import Sprite from "../classes/sprites";
 import { SpriteProps } from "../utils/interfaces";
-
 export const OFFSET_X = -760;
 export const OFFSET_Y = -550;
 
@@ -39,34 +38,11 @@ const BATTLE_BACKGROUND_SPRITE: SpriteProps = {
   frames: 1
 };
 
-const DRAGGLE_MONSTER_SPRITE: SpriteProps = {
-  pos: {x: canvas.width + 48, y: 100},
-  src: 'src/assets/images/draggleSprite.png',
+const FIREBALL_ATTACK_SPRITE: SpriteProps = {
+  pos: {x: 0, y: 0},
+  src: 'src/assets/images/fireball.png',
   frames: 4,
-  animated: true,
-  hold: 35,
-  enemy: true,
-  stats: {
-    name: 'Draggle',
-    level: 3,
-    gender: 'male',
-    health: 100
-  }
-};
-
-const EMBY_MONSTER_SPRITE: SpriteProps = {
-  pos: {x: -48, y: 325},
-  src: 'src/assets/images/embySprite.png',
-  frames: 4,
-  animated: true,
-  hold: 15,
-  ally: true,
-  stats: {
-    name: 'Emby',
-    level: 5,
-    gender: 'male',
-    health: 100
-  }
+  animated: true
 };
 
 export const SPRITES: Sprite[] = [
@@ -77,8 +53,10 @@ export const SPRITES: Sprite[] = [
 
 export const BATTLE_SPRITES: Sprite[] = [
   new Sprite(BATTLE_BACKGROUND_SPRITE),
-  new Sprite(DRAGGLE_MONSTER_SPRITE),
-  new Sprite(EMBY_MONSTER_SPRITE),
+];
+
+export const ATTACK_SPRITES: Sprite[] = [
+  new Sprite(FIREBALL_ATTACK_SPRITE)
 ];
 
 

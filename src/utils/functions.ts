@@ -9,10 +9,14 @@ import { listenKeyboard } from "../listerners/keyboard";
 import { createBattle } from "./battle_field";
 import { checkCollision } from "./collisions";
 import { RANDOM_BATTLE_NUMBER, background, foreground, player } from "./constants";
+import { MONSTER_SPRITES } from "../lib/monsters";
+import Monster from "../classes/monsters";
+import Sprite from "../classes/sprites";
 
 const MOVABLES = [background, ...BOUNDARIES, ...BATTLE_ZONES, foreground];
-const ally = BATTLE_SPRITES.find(sprite => sprite.props.ally);
-const enemy = BATTLE_SPRITES.find(sprite => sprite.props.enemy);
+export const BATTLE_MOVABLES = [...BATTLE_SPRITES, ...MONSTER_SPRITES];
+const ally = MONSTER_SPRITES.find(monster => monster.props.ally);
+const enemy = MONSTER_SPRITES.find(monster => monster.props.enemy);
 
 const battleMap = {
   initilized: false
@@ -52,14 +56,19 @@ export function fill(
 }
 
 function checkSprites(): void {
-  SPRITES.forEach(s => s.updateSprite());
+  SPRITES.forEach(sprite => {
+    sprite.updateSprite();
+  });
 }
 
 function checkBattleSprites(): void {
-  BATTLE_SPRITES.forEach(s => {
-    s.checkStartBattleAnimation();
-    s.updateSprite();
-  });
+  BATTLE_MOVABLES.forEach((sprite: Sprite | Monster) => {
+    if ('stats' in sprite.props) {
+      (sprite as Monster).checkStartBattleAnimation();
+    }
+
+    sprite.updateSprite();
+  })
 }
 
 function drawBoundaries(): void {
@@ -94,28 +103,51 @@ function drawBattleZones(id: number): void {
 }
 
 function createMonsterBox(): void {
-  const statsPanel: HTMLElement | null = document.querySelector('.battle-panel-enemy');
+  const statsPanelEnemy: HTMLElement | null = document.querySelector('.battle-panel-enemy');
+  const statsPanelAlly: HTMLElement | null = document.querySelector('.battle-panel-ally');
 
-  if(statsPanel) {
-    statsPanel.classList.add('fadeIn');
-    statsPanel.style.display = 'block';
+  if(statsPanelEnemy) {
+    statsPanelEnemy.classList.add('fadeIn');
+    statsPanelEnemy.style.display = 'block';
 
     const el = document.createElement('div');
     el.classList.add('battle-enemy-stats');
     const genderSrc = enemy!.props.stats?.gender === 'male' ? 'src/assets/images/male.png' : 'src/assets/images/female.png';
     el.innerHTML = `
-      <h2>${enemy!.props.stats?.name}</h2> <span>Lvl. ${enemy!.props.stats?.level}</span> <img src="${genderSrc}"/>
+      <h2>${enemy!.props.stats?.name}</h2> <span>Lv.${enemy!.props.stats?.level}</span> <img src="${genderSrc}"/>
     `;
 
     const bar = document.createElement('div');
     bar.classList.add('health-bar');
 
     const barGreen = document.createElement('div');
-    barGreen.classList.add('health-bar', 'green');
+    barGreen.classList.add('health-bar-enemy', 'green');
 
-    statsPanel.appendChild(el);
-    statsPanel.appendChild(bar);
-    statsPanel.appendChild(barGreen);
+    statsPanelEnemy.appendChild(el);
+    statsPanelEnemy.appendChild(bar);
+    statsPanelEnemy.appendChild(barGreen);
+  }
+
+  if(statsPanelAlly) {
+    statsPanelAlly.classList.add('fadeIn');
+    statsPanelAlly.style.display = 'block';
+
+    const el = document.createElement('div');
+    el.classList.add('battle-enemy-stats');
+    const genderSrc = ally!.props.stats?.gender === 'male' ? 'src/assets/images/male.png' : 'src/assets/images/female.png';
+    el.innerHTML = `
+      <h2>${ally!.props.stats?.name}</h2> <span>Lv.${ally!.props.stats?.level}</span> <img src="${genderSrc}"/>
+    `;
+
+    const bar = document.createElement('div');
+    bar.classList.add('health-bar');
+
+    const barGreen = document.createElement('div');
+    barGreen.classList.add('health-bar-ally', 'green');
+
+    statsPanelAlly.appendChild(el);
+    statsPanelAlly.appendChild(bar);
+    statsPanelAlly.appendChild(barGreen);
   }
 }
 

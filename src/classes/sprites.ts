@@ -1,7 +1,6 @@
-import { canvas, context } from "./canvas.js";
+import { context } from "./canvas.js";
 import { SpriteProps } from "../utils/interfaces.js";
 import { checkMove } from "../utils/collisions.js";
-import gsap from "gsap";
 
 class Sprite {
   props: SpriteProps;
@@ -20,15 +19,7 @@ class Sprite {
     sprites, 
     animated = false, 
     hold = 15,
-    enemy = false,
-    ally = false,
-    opacity = 1,
-    stats = {
-      health: 100,
-      level: 1,
-      gender: Math.random() <= 0.5 ? 'male' : 'female',
-      name: ''
-    }
+    opacity = 1
   }: SpriteProps) { 
     this.props = { 
       pos, 
@@ -42,68 +33,13 @@ class Sprite {
       sprites,
       animated,
       hold,
-      enemy,
-      ally,
-      opacity,
-       stats
+      opacity
     };
   }
 
   public updateSprite(): void {
     this.draw();
     this.animate();
-  }
-
-  public attack({
-    data,
-    recipent
-  }: any) {
-    if (this.attacking || recipent.props.stats.health <= 0) { return; }
-
-    this.attacking = true;
-    recipent.props.stats.health -= data.power;
-    
-    const tl = gsap.timeline();
-    tl.to(this.props.pos, {
-      x: this.props.pos.x + 95,
-      y: this.props.pos.y - 55,
-      duration: 0.2,
-      onComplete() {
-        gsap.to(recipent.props.pos, {
-          x: recipent.props.pos.x + 15,
-          yoyo: true,
-          repeat: 3,
-          duration: 0.15,
-        });
-
-        gsap.to('.health-bar.green', {
-          width: (recipent.props.stats.health) + '%'
-        })
-
-        gsap.to(recipent.props, {
-          yoyo: true,
-          repeat: 3,
-          duration: 0.1,
-          opacity: 0
-        })
-      }, 
-    }).to(this.props.pos, {
-      x: this.props.pos.x,
-      y: this.props.pos.y,
-      duration: 0.6
-    }).then(_ => this.attacking = false);
-  }
-
-  public checkStartBattleAnimation(): void {
-    if (this.props.enemy) {
-      if (this.props.pos.x > canvas.width - (this.props.img ? (this.props.img.width / 2) + 48 : 0)) {
-        this.props.pos.x -= 12;
-      }
-    } else if (this.props.ally) {
-      if (this.props.pos.x < (this.props.img ? (this.props.img.width - 48) : 0)) {
-        this.props.pos.x += 15;
-      }
-    }
   }
 
   public draw(): void {

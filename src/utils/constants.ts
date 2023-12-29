@@ -12,4 +12,4 @@ export const RUNNING_VELOCITY = 5;
 export const RECT_WIDTH = 48;
 export const RECT_HEIGHT = 48;
 
-export const RANDOM_BATTLE_NUMBER = 1 ;
+export const RANDOM_BATTLE_NUMBER = 1;

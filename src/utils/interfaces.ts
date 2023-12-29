@@ -1,3 +1,5 @@
+import { MonsterAttack } from "../lib/attacks";
+
 export interface Coords {
   x: number;
   y: number;
@@ -15,10 +17,14 @@ export interface SpriteProps {
   sprites?: {[key: string]: HTMLImageElement};
   animated?: boolean, // Monster Animation Default,
   hold?: number,
+  opacity?: number // Battle Opacity
+}
+
+export interface MonsterProps extends SpriteProps {
   enemy?: boolean, // Sprite is Enemy
   ally?: boolean, // Sprite is Ally
-  opacity?: number // Battle Opacity
-  stats?: MonsterStats
+  stats?: MonsterStats,
+  attacks?: MonsterAttack[]
 }
 
 export interface BoundaryProps {
