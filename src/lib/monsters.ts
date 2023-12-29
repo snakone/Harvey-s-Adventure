@@ -36,7 +36,7 @@ const EMBY_MONSTER_SPRITE: MonsterProps = {
 };
 
 export const MONSTER_SPRITES: Monster[] = [
-  new Monster(EMBY_MONSTER_SPRITE),
   new Monster(DRAGGLE_MONSTER_SPRITE),
+  new Monster(EMBY_MONSTER_SPRITE),
 ];
 

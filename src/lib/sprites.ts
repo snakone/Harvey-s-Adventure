@@ -45,6 +45,13 @@ const FIREBALL_ATTACK_SPRITE: SpriteProps = {
   animated: true
 };
 
+const FIREBALL_ROTATED_ATTACK_SPRITE: SpriteProps = {
+  pos: {x: 0, y: 0},
+  src: 'src/assets/images/fireball_rotated.png',
+  frames: 4,
+  animated: true
+};
+
 export const SPRITES: Sprite[] = [
   new Sprite(BACKGROUND_SPRITE),
   new Sprite(PLAYER_SPRITE),
@@ -56,7 +63,8 @@ export const BATTLE_SPRITES: Sprite[] = [
 ];
 
 export const ATTACK_SPRITES: Sprite[] = [
-  new Sprite(FIREBALL_ATTACK_SPRITE)
+  new Sprite(FIREBALL_ATTACK_SPRITE),
+  new Sprite(FIREBALL_ROTATED_ATTACK_SPRITE)
 ];
 
 

@@ -19,7 +19,8 @@ class Sprite {
     sprites, 
     animated = false, 
     hold = 15,
-    opacity = 1
+    opacity = 1,
+    rotation = 0
   }: SpriteProps) { 
     this.props = { 
       pos, 
@@ -33,7 +34,8 @@ class Sprite {
       sprites,
       animated,
       hold,
-      opacity
+      opacity,
+      rotation
     };
   }
 
@@ -44,6 +46,9 @@ class Sprite {
 
   public draw(): void {
     context?.save();
+    context?.translate(this.props.pos.x + 24, this.props.pos.y + 24);
+    context?.rotate(this.props.rotation || 0);
+    context?.translate(-this.props.pos.x - 24, -this.props.pos.y - 24);
     context!.globalAlpha = this.props.opacity || 1; 
     if (this.props.img && this.props.frames) {
       context?.drawImage(
@@ -77,7 +82,10 @@ class Sprite {
 
     if (!this.props.moving) { return; }
 
-    if (this.elapsed % (this.props.hold || 15) === 0 || (this.current === 0 && !this.props.animated)) {
+    if (
+      this.elapsed % (this.props.hold || 15) === 0 || 
+      (this.current === 0 && !this.props.animated)
+    ) {
       this.current < (this.props.frames || 1) - 1 ? 
       this.current++ : this.current = 0;
     }

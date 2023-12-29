@@ -18,6 +18,7 @@ export interface SpriteProps {
   animated?: boolean, // Monster Animation Default,
   hold?: number,
   opacity?: number // Battle Opacity
+  rotation?: number;
 }
 
 export interface MonsterProps extends SpriteProps {

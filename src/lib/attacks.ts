@@ -1,22 +1,21 @@
-export const MONSTER_ATTACKS: {[key in MONSTER_ATTACK_NAMES]: MonsterAttack} = {
+import { ATTACK_ENUMS, ELEMENTALS } from "../utils/enums";
+
+export const MONSTER_ATTACKS: {[key in ATTACK_ENUMS]: MonsterAttack} = {
   Tackle: {
-    name: 'Tackle',
+    name: ATTACK_ENUMS.TACKLE,
     power: 10,
-    type: 'Normal'
+    type: ELEMENTALS.NORMAL
   },
   Fireball: {
-    name: 'Fireball',
+    name: ATTACK_ENUMS.FIREBALL,
     power: 15,
-    type: 'Fire'
+    type: ELEMENTALS.FIRE
   }
 }
 
-type MONSTER_ATTACK_NAMES = 'Tackle' | 'Fireball';
-
 export interface MonsterAttack {
-  name: string;
+  name: ATTACK_ENUMS;
   power: number;
-  type: MONSTER_TYPE;
+  type: ELEMENTALS;
 }
 
-export type MONSTER_TYPE = 'Normal' | 'Fire' | 'Water' | 'Electric'
