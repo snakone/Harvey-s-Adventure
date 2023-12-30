@@ -1,12 +1,11 @@
 import gsap from "gsap";
 import Monster from "../classes/monsters";
 import Sprite from "../classes/sprites";
-import { animate } from "./functions";
+import { animate, character } from "./functions";
 import { AttackFunction } from "./interfaces";
 import { BATTLE_SPRITES } from "../lib/sprites";
 import { context, canvas } from "../classes/canvas";
 import { DRAGGLE_MONSTER_SPRITE, EMBY_MONSTER_SPRITE } from "../lib/monsters";
-import { scanGamePads } from "../listerners/gamepad";
 import { MONSTER_ATTACKS, MonsterAttack } from "../lib/attacks";
 import { ATTACK_ENUMS, ELEMENTALS, SWITCH_COLOR_TYPE } from "./enums";
 
@@ -26,7 +25,6 @@ export const SWITCH_ATTACK_NAME = {
   Fireball: MONSTER_ATTACKS.Fireball
 }
 
-export let ally: Monster | undefined;
 export let enemy: Monster | undefined;
 export let battleAnimationLoop: number;
 
@@ -35,10 +33,12 @@ export let battleAnimationLoop: number;
  * 
  * Uses RAF (Request Animation Frame)
  * @returns {void}
+ * @function drawBattleGround
+ * @function checkBattleSprites
  */
 export function battle(): void {
   battleAnimationLoop = window.requestAnimationFrame(battle);
-  scanGamePads();
+  // scanGamePads();
   if (!battleMap.initilized) { return; }
   context?.clearRect(0, 0, canvas.width, canvas.height);
   drawBattleGround();
@@ -77,11 +77,12 @@ function checkBattleSprites(): void {
  * @returns {void}
  */
 export function resetBattle(): void {
-  let oldAlly = ally!;
-  if (!oldAlly) { ally = new Monster(EMBY_MONSTER_SPRITE); }
+  let oldMonster = character.selectedMonster!;
+  if (!oldMonster) { character.createTeam([new Monster(EMBY_MONSTER_SPRITE)]); }
   enemy = new Monster(DRAGGLE_MONSTER_SPRITE);
-  MONSTER_SPRITES = [ally!, enemy];
-  BATTLE_MOVABLES = [enemy, ally!];
+  character.selectMonster(0);
+  MONSTER_SPRITES = [character.selectedMonster!, enemy];
+  BATTLE_MOVABLES = [enemy, character.selectedMonster!];
   clearBattleQueue();
 }
 
@@ -126,7 +127,7 @@ export function endBattle(): void {
  */
 function showFightPanel(panel: HTMLElement): void {
   const fightPanel: HTMLElement | null = document.querySelector('.battle-fight-panel');
-  if (!fightPanel || (!ally || !enemy)) { return; }
+  if (!fightPanel || (!character.selectedMonster || !enemy)) { return; }
   panel.style.display = 'none';
   fightPanel.classList.add('fadeIn');
   fightPanel.style.display = 'grid';
@@ -191,8 +192,10 @@ export function createHTMLMonsterBox(): void {
       panel.style.display = 'block';
       panel.replaceChildren();
 
-      const current = isEnemy ? enemy : ally;
-      const { name, level, gender } = current!.props.stats || {};
+      const current = isEnemy ? enemy : character.selectedMonster;
+      if (!current) { return; }
+
+      const { name, level, gender } = current.props.stats || {};
       const genderSrc = `/images/${gender}.png`;
       const el = document.createElement('div');
       el.classList.add('battle-enemy-stats');
@@ -203,6 +206,7 @@ export function createHTMLMonsterBox(): void {
 
       const barGreen = document.createElement('div');
       barGreen.classList.add(isEnemy ? 'health-bar-enemy' : 'health-bar-ally', 'green');
+      barGreen.style.width = current.props.stats?.health + '%';
 
       panel.appendChild(el);
       panel.appendChild(bar);
@@ -221,13 +225,15 @@ export function createHTMLMonsterBox(): void {
 * @returns {void}
 */
 export function createAttacksByMonster(): void {
+  if(!character.selectedMonster) { return; }
+
   const el = document.querySelector('.battle-fight-panel');
   el?.replaceChildren();
 
   if(el) {
     for(const i of [1,2,3,4]) {
-      const name = ally!.props.attacks![i - 1]?.name;
-      const type = ally!.props.attacks![i - 1]?.type;
+      const name = character.selectedMonster.props.attacks![i - 1]?.name;
+      const type = character.selectedMonster.props.attacks![i - 1]?.type;
       const button = createAttackButton(name || '-', i.toString(), type);
       el.append(button);
     }
@@ -301,9 +307,9 @@ function listenerFightPanel(): void {
     const name: ATTACK_ENUMS = fightPanelEv.target.textContent;
     const attack: MonsterAttack = SWITCH_ATTACK_NAME[name];
   
-    if (!name || !attack) { return; }
-    performAttack(ally!, enemy!, attack);
-    pushAttackToQueue(enemy!, ally!);
+    if (!name || !attack || !character.selectedMonster || !enemy) { return; }
+    performAttack(character.selectedMonster, enemy, attack);
+    pushAttackToQueue(enemy, character.selectedMonster);
   });
 }
 
@@ -312,15 +318,15 @@ function listenerBattleQueue(): void {
 
   // QUEUE
   dialogRef?.addEventListener('click', (_) => {
-    console.log({ally, enemy})
-    if(ally?.attacking || enemy?.attacking) { return; }
+    const monster = character.selectedMonster;
+    if(monster?.attacking || enemy?.attacking) { return; }
     if (enemy!.props.stats!.health! <= 0) {
       enemy!.attacking = false;
       enemy!.faint();
       return;
-    } else if (ally!.props.stats!.health! <= 0) {
-      ally!.attacking = false;
-      ally!.faint();
+    } else if (monster?.props.stats!.health! <= 0) {
+      monster!.attacking = false;
+      monster!.faint();
       return;
     }
   

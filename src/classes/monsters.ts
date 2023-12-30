@@ -1,13 +1,14 @@
 import Sprite from "../classes/sprites";
-import { ATTACK_ANIMATIONS, MonsterAttack } from "../lib/attacks";
 import { MonsterProps } from "../utils/interfaces";
 import { canvas } from "./canvas";
 import gsap from "gsap";
 import { ATTACK_ENUMS } from "../utils/enums";
 import { canCloseBattleDialog, endBattle, returnToMap, setCanCloseBattle } from "../utils/battle_field";
+import { ATTACK_ANIMATIONS, MonsterAttack } from "../lib/attacks";
 
 class Monster extends Sprite {
   props: MonsterProps;
+  selected = false;
 
   constructor({
     pos, src, frames = 0, scale = 1, velocity = 3, moveable = false, 
@@ -36,6 +37,7 @@ class Monster extends Sprite {
     this.props.stats!.dead = false;
     this.current = 0;
     this.elapsed = 0;
+    this.selected = false;
   }
   
   public attack({

@@ -12,7 +12,7 @@ export const MONSTER_ATTACKS: {[key in ATTACK_ENUMS]: MonsterAttack} = {
   },
   Fireball: {
     name: ATTACK_ENUMS.FIREBALL,
-    power: 100,
+    power: 15,
     type: ELEMENTALS.FIRE
   }
 }

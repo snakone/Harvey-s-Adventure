@@ -11,7 +11,8 @@ class Boundary {
 
   public draw(): void {
     if (this.props && context) {
-      context.fillStyle = 'rgba(255, 0, 0, .5)';
+      const color = this.props.type === 'wall' ? 'rgba(255, 0, 0, .5)' : 'rgba(0, 0, 255, .5)';
+      context.fillStyle = color;
       context.fillRect(
         this.props.pos.x, 
         this.props.pos.y, 

@@ -1,8 +1,4 @@
-import Sprite from "../classes/sprites";
-import { SPRITES } from "../lib/sprites";
 import { changeReturnFromBattle } from "../utils/functions";
-
-const player: Sprite = SPRITES[1];
 
 export const keys: any = {
   a: false,
@@ -27,7 +23,6 @@ export function listenKeyboard(): void {
     if (e.key === ' ') keys.running = false;
     if (!validKeys.includes(e.key)) return;
     keys[e.key] = false;
-    player.current = 0;
     changeReturnFromBattle(false);
   };
 
