@@ -1,30 +1,31 @@
 import Boundary from "../classes/boundary";
 import Sprite from "../classes/sprites";
-import { PALLET_TOWN_COLLISION } from "../lib/pallet_town";
-import { GAME_PADS, CONTROLLER_KEY_MAP } from "../listerners/gamepad";
-import { keys } from "../listerners/keyboard";
-import { HORIZONTAL_TILES, RUNNING_VELOCITY, DEFAULT_VELOCITY } from "./constants";
 import { SpriteProps } from "./interfaces";
+import { keys } from "../listerners/keyboard";
+import { PALLET_TOWN_COLLISION } from "../lib/pallet_town";
+import { HORIZONTAL_TILES, RUNNING_VELOCITY, DEFAULT_VELOCITY } from "./constants";
 
 export function createCollisionMap(): number[][] {
   const subTile = [];
   for (let i = 0; i < PALLET_TOWN_COLLISION.length; i += HORIZONTAL_TILES) {
     subTile.push(PALLET_TOWN_COLLISION.slice(i, HORIZONTAL_TILES + i));
   }
-
   return subTile;
 }
 
 export function checkCollision(
   player: Sprite,
   boundary: Boundary,
-  pixelRatio = 15
+  ratio = 15
 ): boolean {
 
   let playerX = player.props.pos.x;
   let playerY = player.props.pos.y;
   const playerWidth = player.props.img?.width || 0;
   const playerHeight = player.props.img?.height || 0;
+
+  const boundX = boundary.props.pos.x;
+  const boundY = boundary.props.pos.y;
 
   const halfPlayerWidth = playerWidth / 4;
 
@@ -38,20 +39,20 @@ export function checkCollision(
 
   switch (keys.lastKey) {
     case 'w':
-      return isOverlapX(playerX, boundary.props.pos.x, 48) &&
-             isOverlapY(playerY, boundary.props.pos.y + pixelRatio, 48 + pixelRatio);
+      return isOverlapX(playerX, boundX, 48) &&
+             isOverlapY(playerY, boundY + ratio, 48 + ratio);
 
     case 'a':
-      return isOverlapX(playerX, boundary.props.pos.x + pixelRatio, 48 + pixelRatio) &&
-             isOverlapY(playerY, boundary.props.pos.y, 48);
+      return isOverlapX(playerX, boundX + ratio, 48 + ratio) &&
+             isOverlapY(playerY, boundY, 48);
 
     case 's':
-      return isOverlapX(playerX, boundary.props.pos.x, 48) &&
-             isOverlapY(playerY, boundary.props.pos.y - pixelRatio, 48 - pixelRatio);
+      return isOverlapX(playerX, boundX, 48) &&
+             isOverlapY(playerY, boundY - ratio, 48 - ratio);
 
     case 'd':
-      return isOverlapX(playerX, boundary.props.pos.x - pixelRatio, 48 - pixelRatio) &&
-             isOverlapY(playerY, boundary.props.pos.y, 48);
+      return isOverlapX(playerX, boundX - ratio, 48 - ratio) &&
+             isOverlapY(playerY, boundY, 48);
   }
 
   return false;
@@ -66,15 +67,15 @@ export function checkMove(sprite: Boundary | Sprite): void {
   }
 
   // GAMEPAD
-  const gamePad: Gamepad | null = GAME_PADS[0];
-  gamePad?.buttons.forEach((button, i) => {
-    if(button.pressed && props.moveable) {
-      if(CONTROLLER_KEY_MAP[i] === 'w') props.pos.y += props.velocity || DEFAULT_VELOCITY;
-      else if(CONTROLLER_KEY_MAP[i] === 'a') props.pos.x += props.velocity || DEFAULT_VELOCITY;
-      else if(CONTROLLER_KEY_MAP[i] === 'd') props.pos.x -= props.velocity || DEFAULT_VELOCITY;
-      else if(CONTROLLER_KEY_MAP[i] === 's') props.pos.y -= props.velocity || DEFAULT_VELOCITY;
-    }
-  });
+  // const gamePad: Gamepad | null = GAME_PADS[0];
+  // gamePad?.buttons.forEach((button, i) => {
+  //   if(button.pressed && props.moveable) {
+  //     if(CONTROLLER_KEY_MAP[i] === 'w') props.pos.y += props.velocity || DEFAULT_VELOCITY;
+  //     else if(CONTROLLER_KEY_MAP[i] === 'a') props.pos.x += props.velocity || DEFAULT_VELOCITY;
+  //     else if(CONTROLLER_KEY_MAP[i] === 'd') props.pos.x -= props.velocity || DEFAULT_VELOCITY;
+  //     else if(CONTROLLER_KEY_MAP[i] === 's') props.pos.y -= props.velocity || DEFAULT_VELOCITY;
+  //   }
+  // });
 
   // KEYBOARD
   if (props.moveable) {

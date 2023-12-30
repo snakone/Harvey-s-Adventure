@@ -8,46 +8,46 @@ const IMAGE_WIDTH = 192;
 
 const BACKGROUND_SPRITE: SpriteProps = {
   pos: {x: OFFSET_X, y: OFFSET_Y},
-  src: 'src/assets/images/Pellet_Town2.png',
+  src: 'images/Pellet_Town2.png',
   moveable: true,
   frames: 1
 };
 
 const PLAYER_SPRITE: SpriteProps = {
   pos: {x: (DEFAULT_WIDTH / 2) - IMAGE_WIDTH / 4, y: (DEFAULT_HEIGHT / 2) + 40},
-  src: 'src/assets/images/playerDown.png',
+  src: 'images/playerDown.png',
   frames: 4,
   sprites: {
-    up: Sprite.createImage('src/assets/images/playerUp.png'),
-    down: Sprite.createImage('src/assets/images/playerDown.png'),
-    left: Sprite.createImage('src/assets/images/playerLeft.png'),
-    right: Sprite.createImage('src/assets/images/playerRight.png')
+    up: Sprite.createImage('images/playerUp.png'),
+    down: Sprite.createImage('images/playerDown.png'),
+    left: Sprite.createImage('images/playerLeft.png'),
+    right: Sprite.createImage('images/playerRight.png')
   }
 };
 
 const FOREGROUND_SPRITE: SpriteProps = {
   pos: {x: OFFSET_X, y: OFFSET_Y},
-  src: 'src/assets/images/foreground.png',
+  src: 'images/foreground.png',
   moveable: true,
   frames: 1
 };
 
 const BATTLE_BACKGROUND_SPRITE: SpriteProps = {
   pos: {x: 0, y: 0},
-  src: 'src/assets/images/battleBackground.png',
+  src: 'images/battleBackground.png',
   frames: 1
 };
 
 const FIREBALL_ATTACK_SPRITE: SpriteProps = {
   pos: {x: 0, y: 0},
-  src: 'src/assets/images/fireball.png',
+  src: 'images/fireball.png',
   frames: 4,
   animated: true
 };
 
 const FIREBALL_ROTATED_ATTACK_SPRITE: SpriteProps = {
   pos: {x: 0, y: 0},
-  src: 'src/assets/images/fireball_rotated.png',
+  src: 'images/fireball_rotated.png',
   frames: 4,
   animated: true
 };

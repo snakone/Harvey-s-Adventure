@@ -5,8 +5,8 @@ import { context } from "./canvas";
 
 class Boundary {
   props: BoundaryProps;
-  constructor({pos, width = RECT_WIDTH, height = RECT_HEIGHT, velocity = 3, moveable = false }: BoundaryProps) {
-    this.props = { pos, width, height, velocity, moveable };
+  constructor({pos, width = RECT_WIDTH, height = RECT_HEIGHT, velocity = 3, moveable = false, type }: BoundaryProps) {
+    this.props = { pos, width, height, velocity, moveable, type };
   }
 
   public draw(): void {

@@ -6,6 +6,5 @@ export function createBattleZonesMap(): number[][] {
   for (let i = 0; i < PALLET_TOWN_BATTLE_ZONES.length; i += HORIZONTAL_TILES) {
     subTile.push(PALLET_TOWN_BATTLE_ZONES.slice(i, HORIZONTAL_TILES + i));
   }
-
   return subTile;
 }

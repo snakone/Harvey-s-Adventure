@@ -1,5 +1,6 @@
 import Sprite from "../classes/sprites";
 import { SPRITES } from "../lib/sprites";
+import { changeReturnFromBattle } from "../utils/functions";
 
 const player: Sprite = SPRITES[1];
 
@@ -27,6 +28,7 @@ export function listenKeyboard(): void {
     if (!validKeys.includes(e.key)) return;
     keys[e.key] = false;
     player.current = 0;
+    changeReturnFromBattle(false);
   };
 
   window.addEventListener('keydown', handleKeyDown);

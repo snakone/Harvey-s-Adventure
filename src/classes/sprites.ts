@@ -49,7 +49,7 @@ class Sprite {
     context?.translate(this.props.pos.x + 24, this.props.pos.y + 24);
     context?.rotate(this.props.rotation || 0);
     context?.translate(-this.props.pos.x - 24, -this.props.pos.y - 24);
-    context!.globalAlpha = this.props.opacity || 1; 
+    context!.globalAlpha = this.props.opacity !== undefined ? this.props.opacity : 1; 
     if (this.props.img && this.props.frames) {
       context?.drawImage(
         this.props.img, // Source

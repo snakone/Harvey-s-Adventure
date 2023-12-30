@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <base href="./">
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/src/assets/images/logo.png" />
-    <link rel="stylesheet" href="/src/style.css"/>
+    <link rel="icon" type="image/png" href="images/logo.png" />
+    <link rel="stylesheet" href="style.css"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Raleway&display=swap" rel="stylesheet">
@@ -11,34 +12,24 @@
     <title>Harvey's Adventure</title>
   </head>
   <body>
-    <div id="battle-transition" class=""></div>
-    <canvas id="game"></canvas>
-    <div class="battle-panel-enemy animated">
-
-    </div>
-    <div class="battle-panel-ally animated">
-
-    </div>
-    <div id="battle-panel">
-      <div style="height: 100%;">
-        <h1>What will you do?</h1>
-        <div class="batte-start-selection">
-          <button value="true" class="animated fadeIn">Fight</button>
-          <button value="false">Scape</button>
+    <h1 class="title">Harvey's Adventure</h1>
+    <main>
+      <div id="battle-transition"></div>
+      <canvas id="game"></canvas>
+      <div class="battle-panel-enemy animated"></div>
+      <div class="battle-panel-ally animated"></div>
+      <div id="battle-panel">
+        <div style="height: 100%;">
+          <h1>What will you do?</h1>
+          <div class="battle-start-selection">
+            <button value="true" class="animated fadeIn">Fight</button>
+            <button value="false">Scape</button>
+          </div>
+          <div class="battle-fight-panel"></div>
         </div>
-        <div class="battle-fight-panel">
-          <button value="1" class="animated fadeIn">Attack 1</button>
-          <button value="2" class="animated fadeIn">Attack 2</button>
-          <button value="3" class="animated fadeIn">Attack 3</button>
-          <button value="4" class="animated fadeIn">Attack 4</button>
-          <button value="back" class="animated fadeIn">Back</button>
-        </div>
+        <div id="info-battle-dialog"></div>
       </div>
-
-      <div id="info-battle-dialog">
-        
-      </div>
-    </div>
-    <script type="module" src="/src/main.ts"></script>
+    </main>
+    <script type="module" src="./src/main.ts"></script>
   </body>
 </html>

@@ -18,7 +18,8 @@ export function buildBoundaries(): Boundary[] {
             x: j * RECT_WIDTH + OFFSET_X,
             y: i * RECT_HEIGHT + OFFSET_Y
           },
-          moveable: true
+          moveable: true,
+          type: 'wall'
         }
         array.push(new Boundary(boundary));
       }

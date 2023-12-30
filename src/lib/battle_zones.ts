@@ -18,7 +18,8 @@ export function buildBattleZones(): Boundary[] {
             x: j * RECT_WIDTH + OFFSET_X,
             y: i * RECT_HEIGHT + OFFSET_Y
           },
-          moveable: false
+          moveable: true,
+          type: 'battle'
         }
         array.push(new Boundary(boundary));
       }

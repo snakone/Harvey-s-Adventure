@@ -25,7 +25,7 @@ export interface MonsterProps extends SpriteProps {
   enemy?: boolean, // Sprite is Enemy
   ally?: boolean, // Sprite is Ally
   stats?: MonsterStats,
-  attacks?: MonsterAttack[]
+  attacks?: MonsterAttack[],
 }
 
 export interface BoundaryProps {
@@ -34,11 +34,17 @@ export interface BoundaryProps {
   height?: number,
   velocity?: number, // Move Velocity
   moveable?: boolean, // Can Sprite Move?
+  type: 'wall' | 'battle'
 }
 
 export interface MonsterStats {
-  health: number;
-  level: number;
+  health?: number;
+  level?: number;
   gender: 'male' | 'female',
   name: string;
+  dead?: boolean;
+}
+
+export interface AttackFunction {
+  (): void;
 }

@@ -1,4 +1,4 @@
-import { keys } from "./keyboard";
+import { keys } from "./keyboard.js";
 
 export const GAME_PADS: {[key: number]: Gamepad | null} = {};
 
@@ -11,6 +11,15 @@ export function listenGamePad(): void {
     delete GAME_PADS[e.gamepad.index];
   });
 }
+export const CONTROLLER_KEY_MAP: any = {
+  12: 'w',
+  13: 's',
+  14: 'a',
+  15: 'd',
+  0: ' '
+};
+
+const validKeys = Object.keys(CONTROLLER_KEY_MAP).map(Number);
 
 export function scanGamePads() {
   const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
@@ -20,25 +29,20 @@ export function scanGamePads() {
     }
   }
 
-  const connectedGamePads = Object.keys(GAME_PADS).length > 0;
-  const anyButtonPressed = GAME_PADS[0]?.buttons.some((button: GamepadButton) => button.pressed);
-
-  if (connectedGamePads) {
-    if (anyButtonPressed) {
-      keys.lastKey = '';
+  GAME_PADS[0]?.buttons.forEach((button, i) => {
+    if (!validKeys.includes(i)) return;
+    if(button.pressed) {
+      keys[CONTROLLER_KEY_MAP[i]] = true;
+      keys.lastKey = CONTROLLER_KEY_MAP[i];
+    } else {
+      keys[CONTROLLER_KEY_MAP[i]] = false;
     }
-    GAME_PADS[0]?.buttons
-    .filter((_: GamepadButton, i: number) => i === 0 && keys.lastKey === '')
-    .forEach((button: GamepadButton) => {
-      keys.running = button.pressed;
-    })
-  }
+  });
+
+  GAME_PADS[0]?.buttons
+  .filter((_: GamepadButton, i: number) => i === 0 && keys.lastKey === ' ')
+  .forEach((button: GamepadButton) => {
+    keys.running = button.pressed;
+  });
 }
 
-export const CONTROLLER_KEY_MAP: any = {
-  12: 'w',
-  13: 's',
-  14: 'a',
-  15: 'd',
-  0: ' '
-};

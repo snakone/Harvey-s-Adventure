@@ -9,3 +9,10 @@ export enum ELEMENTALS {
   ELECTRIC = 'Electric',
   WATER = 'Water'
 }
+
+export const SWITCH_COLOR_TYPE: {[key in ELEMENTALS]: string} = {
+  Normal: 'black',
+  Fire: 'firebrick',
+  Electric: 'yellow',
+  Water: 'darkcyan'
+}

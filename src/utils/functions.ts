@@ -3,27 +3,28 @@ import Boundary from "../classes/boundary";
 import { canvas, context } from "../classes/canvas";
 import BATTLE_ZONES from "../lib/battle_zones";
 import BOUNDARIES from "../lib/boundaries";
-import { SPRITES } from "../lib/sprites";
-import { listenGamePad, scanGamePads } from "../listerners/gamepad";
-import { listenKeyboard } from "../listerners/keyboard";
-import { battle, battleMap, createBattle, createMonsterBox } from "./battle_field";
 import { checkCollision } from "./collisions";
+import { SPRITES } from "../lib/sprites";
+import { listenKeyboard } from "../listerners/keyboard";
+import { battle, battleMap, clearBattleQueue, createAttacksByMonster, resetBattle, createHTMLMonsterBox } from "./battle_field";
 import { RANDOM_BATTLE_NUMBER, background, foreground, player } from "./constants";
 
-const MOVABLES = [background, ...BOUNDARIES, ...BATTLE_ZONES, foreground];
+export let returnFromBattle = false;
+export let animationLoop: number;
+const MOVABLES = [background, ...BOUNDARIES, foreground, ...BATTLE_ZONES];
 
 export function start(): void {
   animate();
   listenKeyboard();
-  listenGamePad();
+  // listenGamePad();
 }
 
-function animate(): void {
-  const id = window.requestAnimationFrame(animate);
-  scanGamePads();
+export function animate(fromBattle?: boolean): void {
+  animationLoop = window.requestAnimationFrame(() => animate());
+  // scanGamePads();
   if (battleMap.initilized) { return; }
   checkSprites();
-  drawBattleZones(id);
+  drawBattleZones(fromBattle);
   drawBoundaries();
   fill(context);
 }
@@ -38,9 +39,7 @@ export function fill(
 }
 
 function checkSprites(): void {
-  SPRITES.forEach(sprite => {
-    sprite.updateSprite();
-  });
+  SPRITES.forEach(sprite => sprite.updateSprite());
 }
 
 function drawBoundaries(): void {
@@ -52,25 +51,39 @@ function drawBoundaries(): void {
   });
 }
 
-function drawBattleZones(id: number): void {
+export function changeReturnFromBattle(value: boolean): void {
+  returnFromBattle = value;
+}
+
+function drawBattleZones(fromBattle?: boolean): void {
   BATTLE_ZONES.forEach(zone => zone.draw());
+
+  if(fromBattle !== undefined) {
+    returnFromBattle = fromBattle;
+  }
+
+  if (returnFromBattle) {return; }
 
   const onBattle = BATTLE_ZONES.some(zone => {
     const overlap = getOverlappingArea(zone);
     return checkCollision(player, zone) && overlap > (48 * 48) / 2 && Math.random() <= RANDOM_BATTLE_NUMBER;
   });
 
-  if (onBattle) { activeBattle(id); }
+  if (onBattle) { activeBattle(animationLoop); }
 }
 
 function activeBattle(id: number): void {
-  battleMap.initilized = true;
-  activeBattleGround();
   window.cancelAnimationFrame(id);
+  battleMap.initilized = true;
+
+  activeBattleGround();
+  clearBattleQueue();
 
   setTimeout(() => {
-    gsap.to('#battle-panel', {opacity: 1});
-    createMonsterBox();
+    gsap.to('#battle-panel', {opacity: 1, duration: .2, delay: .2});
+    createHTMLMonsterBox();
+    createAttacksByMonster();
+
     battle();
   }, 2220); // Wait animation
 }
@@ -93,14 +106,6 @@ function getOverlappingArea(
 function activeBattleGround(): void {
   const battle = document.getElementById('battle-transition');
   if (battle) { battle.classList.add('active'); }
-  createBattle();
+  resetBattle();
 }
-
-// function removeBattleGround(): void {
-//   const battle = document.getElementById('battle-transition');
-
-//   if (battle) {
-//     battle.classList.remove('active');
-//   }
-// }
 
