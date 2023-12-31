@@ -43,6 +43,8 @@ export interface MonsterStats {
   gender: 'male' | 'female',
   name: string;
   dead?: boolean;
+  givenExp?: number; // EXP given upon defeat
+  totalExp?: number; // Total Monster EXP
 }
 
 export interface AttackFunction {

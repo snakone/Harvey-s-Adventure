@@ -53,14 +53,14 @@ class Sprite {
     if (this.props.img && this.props.frames) {
       context?.drawImage(
         this.props.img, // Source
-        (this.current || 0) * (this.props.img.width / this.props.frames),  // X
-        0,  // Y
-        this.props.img.width / this.props.frames,  // Width
-        this.props.img.height,  // Height
+        0,  // X
+        (this.current || 0) * (this.props.img.height / this.props.frames),  // Y
+        this.props.img.width,  // Width
+        this.props.img.height / this.props.frames,  // Height
         this.props.pos.x, // Offset
         this.props.pos.y, 
-        (this.props.img.width / this.props.frames) * (this.props.scale || 1),  // Scale
-        this.props.img.height * (this.props.scale || 1)
+        (this.props.img.width) * (this.props.scale || 1),  // Scale
+        (this.props.img.height / this.props.frames) * (this.props.scale || 1)
       );
 
       context?.restore();

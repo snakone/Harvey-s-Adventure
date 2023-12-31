@@ -1,10 +1,22 @@
 import Sprite from "../classes/sprites";
-import { MonsterProps } from "../utils/interfaces";
+import { MonsterProps, MonsterStats } from "../utils/interfaces";
 import { canvas } from "./canvas";
 import gsap from "gsap";
 import { ATTACK_ENUMS } from "../utils/enums";
-import { canCloseBattleDialog, endBattle, returnToMap, setCanCloseBattle } from "../utils/battle_field";
+
+import { 
+  ATTACK_QUEUE,
+  animateExpBar,
+  canCloseBattleDialog,
+  endBattle,
+  returnToMap,
+  setCanCloseBattle,
+  setLastMonsterAttacked,
+  showBattleDialog
+} from "../utils/battle_field";
+
 import { ATTACK_ANIMATIONS, MonsterAttack } from "../lib/attacks";
+import { DEFAULT_ALLY_SPRITE_Y, DEFAULT_ENEMY_SPRITE_Y } from "../utils/constants";
 
 class Monster extends Sprite {
   props: MonsterProps;
@@ -19,7 +31,9 @@ class Monster extends Sprite {
       level: 1,
       gender: Math.random() <= 0.5 ? 'male' : 'female',
       name: '',
-      dead: false
+      dead: false,
+      givenExp: 10,
+      totalExp: 0
     }
   }: MonsterProps) {
     super({
@@ -38,6 +52,14 @@ class Monster extends Sprite {
     this.current = 0;
     this.elapsed = 0;
     this.selected = false;
+    this.props.pos.y = this.props.ally ? DEFAULT_ALLY_SPRITE_Y : DEFAULT_ENEMY_SPRITE_Y;
+    this.props.stats!.totalExp = this.props.stats!.totalExp !== undefined ? this.props.stats!.totalExp : 0;
+
+    if(Object.keys(this.props.sprites!).length > 0) {
+      this.props.ally ? 
+        this.props.img = this.props.sprites!.back :
+        this.props.img = this.props.sprites!.front;
+    }
   }
   
   public attack({
@@ -56,19 +78,9 @@ class Monster extends Sprite {
 
     this.attacking = true;
     recipent.attacking = true;
-    this.showBattleDialog(data);
-
-    if (recipent.props.stats!.health! <= 0) {
-      recipent.faint();
-      return;
-    }
-
-    if(this.props.stats!.health! <= 0) {
-      this.faint();
-      return;
-    }
-
     recipent.props.stats!.health! -= data.power;
+    showBattleDialog(data, this.props.stats!.name);
+    setLastMonsterAttacked(this);
 
     const healthBarClass = recipent.props.enemy ? '.health-bar-enemy.green' : '.health-bar-ally.green';
     const xBounce = recipent.props.enemy ? 95 : -75;
@@ -107,36 +119,45 @@ class Monster extends Sprite {
 
     this.props.stats!.dead = true;
     this.attacking = false;
+    
+    gsap.to(this.props.pos, { y: this.props.pos.y + 20});
+    gsap.to(this.props, { opacity: 0 });
 
-    gsap.to(this.props.pos, {
-      y: this.props.pos.y + 20
-    })
-    gsap.to(this.props, {
-      opacity: 0,
-      onComplete: () => {setTimeout(() => setCanCloseBattle(true), 1500)}
-    });
-  }
+    if(this.props.enemy) {
+      // EXP DIALOG
+      ATTACK_QUEUE.push(() => {
+        dialogRef!.innerHTML = `${this.props.stats?.name} gained ${this!.props.stats?.givenExp} <strong>experience points</strong>!
+          <img class="animated bounce" src="/images/chevron-down.svg" alt="Click Here"/>`;
+          // setTimeout(() => setCanCloseBattle(true), 1500);
+      });
 
-  private showBattleDialog(data: MonsterAttack): void {
-    const dialogRef = document.getElementById('info-battle-dialog');
-
-    if (dialogRef) {
-      dialogRef.style.display = 'block';
-      dialogRef.innerHTML = `<strong>${this.props.stats?.name}</strong> used ${data.name}
-        <img class="animated bounce" src="/images/chevron-down.svg" alt="Click Here"/>`;
+      ATTACK_QUEUE.push(() => {
+        animateExpBar(this!.props.stats?.givenExp!);
+      });
+    } else {
+      setTimeout(() => setCanCloseBattle(true), 1500);
     }
   }
-  
+
   public checkStartBattleAnimation(): void {
     if (this.props.enemy) {
-      if (this.props.pos.x > canvas.width - (this.props.img ? (this.props.img.width / 2) + 48 : 0)) {
+      if (this.props.pos.x > canvas.width - (this.props.img ? (this.props.img.width) + 30 : 0)) {
         this.props.pos.x -= 12;
       }
     } else if (this.props.ally) {
-      if (this.props.pos.x < (this.props.img ? (this.props.img.width - 48) : 0)) {
+      if (this.props.pos.x < (this.props.img ? (this.props.img.width + 64) : 0)) {
         this.props.pos.x += 15;
       }
     }
+  }
+
+  public changeStat(value: any, key: keyof MonsterStats): void {
+    if(!value || !key || !this.props.stats) { return; }
+    this.props.stats[key] = value as never;
+  }
+
+  public changeSprite(value: 'front' | 'back'): void {
+    if(this.props.sprites) this.props.img = this.props.sprites[value];
   }
 }
 

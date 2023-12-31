@@ -1,6 +1,4 @@
-import { changeReturnFromBattle } from "../utils/functions";
-
-export const keys: any = {
+export const keys: {[key: string]: boolean | string} = {
   a: false,
   d: false,
   w: false,
@@ -23,7 +21,6 @@ export function listenKeyboard(): void {
     if (e.key === ' ') keys.running = false;
     if (!validKeys.includes(e.key)) return;
     keys[e.key] = false;
-    changeReturnFromBattle(false);
   };
 
   window.addEventListener('keydown', handleKeyDown);

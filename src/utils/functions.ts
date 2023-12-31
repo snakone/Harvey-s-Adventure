@@ -32,12 +32,12 @@ export function start(): void {
   // listenGamePad();
 }
 
-export function animate(fromBattle?: boolean): void {
+export function animate(): void {
   animationLoop = window.requestAnimationFrame(() => animate());
-  // scanGamePads();
   if (battleMap.initilized) { return; }
+  // scanGamePads();
   checkSprites();
-  drawBattleZones(fromBattle);
+  drawBattleZones();
   drawBoundaries();
   fill(context);
 }
@@ -64,14 +64,10 @@ function drawBoundaries(): void {
   });
 }
 
-function drawBattleZones(fromBattle?: boolean): void {
+function drawBattleZones(): void {
   BATTLE_ZONES.forEach(zone => zone.draw());
 
-  if(fromBattle !== undefined) {
-    returnFromBattle = fromBattle;
-  }
-
-  if (returnFromBattle) {return; }
+  if(!character.sprite.props.moving) { return; }
 
   const onBattle = BATTLE_ZONES.some(zone => {
     const overlap = getOverlappingArea(zone);
@@ -83,8 +79,9 @@ function drawBattleZones(fromBattle?: boolean): void {
 }
 
 function activeBattle(id: number): void {
+  console.log
   window.cancelAnimationFrame(id);
-  battleMap.initilized = true;
+
 
   activeBattleAnimation();
   clearBattleQueue();
@@ -93,7 +90,7 @@ function activeBattle(id: number): void {
     gsap.to('#battle-panel', {opacity: 1, duration: .2, delay: .2});
     createHTMLMonsterBox();
     createAttacksByMonster();
-
+    battleMap.initilized = true;
     battle();
   }, 2220); // Wait animation
 }
@@ -111,10 +108,6 @@ function getOverlappingArea(
     zone.props.pos.y + 48
   ) -
     Math.max(character.sprite.props.pos.y, zone.props.pos.y));
-}
-
-export function changeReturnFromBattle(value: boolean): void {
-  returnFromBattle = value;
 }
 
 /**

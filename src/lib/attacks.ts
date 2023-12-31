@@ -7,7 +7,7 @@ import { BATTLE_MOVABLES } from "../utils/battle_field";
 export const MONSTER_ATTACKS: {[key in ATTACK_ENUMS]: MonsterAttack} = {
   Tackle: {
     name: ATTACK_ENUMS.TACKLE,
-    power: 10,
+    power: 100,
     type: ELEMENTALS.NORMAL
   },
   Fireball: {
@@ -45,7 +45,7 @@ export const ATTACK_ANIMATIONS = (
           duration: 0.15,
         });
 
-        gsap.to(cssClass, { width: (recipent.props.stats!.health) + '%'});
+        gsap.to(cssClass, { width: (recipent.props.stats!.health) + '%', duration: 2});
 
         gsap.to(recipent.props, {
           yoyo: true,
@@ -89,7 +89,7 @@ export const ATTACK_ANIMATIONS = (
         });
 
         BATTLE_MOVABLES.splice(1, 1);
-        gsap.to(cssClass, { width: (recipent.props.stats!.health) + '%'});
+        gsap.to(cssClass, { width: (recipent.props.stats!.health) + '%', duration: 2});
 
         gsap.to(recipent.props, {
           yoyo: true,

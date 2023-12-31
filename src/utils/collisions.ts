@@ -3,7 +3,14 @@ import Sprite from "../classes/sprites";
 import { SpriteProps } from "./interfaces";
 import { keys } from "../listerners/keyboard";
 import { PALLET_TOWN_COLLISION } from "../lib/pallet_town";
-import { HORIZONTAL_TILES, RUNNING_VELOCITY, DEFAULT_VELOCITY } from "./constants";
+
+import { 
+  HORIZONTAL_TILES, 
+  RUNNING_VELOCITY, 
+  DEFAULT_VELOCITY, 
+  DEFAULT_SPRITE_HOLD, 
+  RUNNING_SPRITE_HOLD 
+} from "./constants";
 
 export function createCollisionMap(): number[][] {
   const subTile = [];
@@ -27,14 +34,17 @@ export function checkCollision(
   const boundX = boundary.props.pos.x;
   const boundY = boundary.props.pos.y;
 
-  const halfPlayerWidth = playerWidth / 4;
+  const halfPlayerHeight = playerHeight / 4;
 
-  const isOverlapX = (x1: number, x2: number, width: number) => x1 + halfPlayerWidth >= x2 && x1 <= x2 + width;
-  const isOverlapY = (y1: number, y2: number, height: number) => y1 <= y2 + height && y1 + playerHeight >= y2;
+  const isOverlapX = (x1: number, x2: number, width: number) => x1 + playerWidth >= x2 && x1 <= x2 + width;
+  const isOverlapY = (y1: number, y2: number, height: number) => y1 <= y2 + height && y1 + halfPlayerHeight >= y2;
 
   if (keys.running) {
     playerX += RUNNING_VELOCITY - DEFAULT_VELOCITY;
     playerY += RUNNING_VELOCITY - DEFAULT_VELOCITY;
+    player.props.hold = RUNNING_SPRITE_HOLD;
+  } else {
+    player.props.hold = DEFAULT_SPRITE_HOLD;
   }
 
   switch (keys.lastKey) {
@@ -65,17 +75,6 @@ export function checkMove(sprite: Boundary | Sprite): void {
   if ('moving' in props) {
     props.moving = false;
   }
-
-  // GAMEPAD
-  // const gamePad: Gamepad | null = GAME_PADS[0];
-  // gamePad?.buttons.forEach((button, i) => {
-  //   if(button.pressed && props.moveable) {
-  //     if(CONTROLLER_KEY_MAP[i] === 'w') props.pos.y += props.velocity || DEFAULT_VELOCITY;
-  //     else if(CONTROLLER_KEY_MAP[i] === 'a') props.pos.x += props.velocity || DEFAULT_VELOCITY;
-  //     else if(CONTROLLER_KEY_MAP[i] === 'd') props.pos.x -= props.velocity || DEFAULT_VELOCITY;
-  //     else if(CONTROLLER_KEY_MAP[i] === 's') props.pos.y -= props.velocity || DEFAULT_VELOCITY;
-  //   }
-  // });
 
   // KEYBOARD
   if (props.moveable) {
