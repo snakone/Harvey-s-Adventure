@@ -1,7 +1,7 @@
-import Boundary from "../classes/boundary";
-import Sprite from "../classes/sprites";
+import Boundary from "../classes/boundary.class";
+import Sprite from "../classes/sprites.class";
 import { SpriteProps } from "./interfaces";
-import { keys } from "../listerners/keyboard";
+import { gameKeys } from "../listerners/keyboard";
 import { PALLET_TOWN_COLLISION } from "../lib/pallet_town";
 
 import { 
@@ -26,8 +26,8 @@ export function checkCollision(
   ratio = 15
 ): boolean {
 
-  let playerX = player.props.pos.x;
-  let playerY = player.props.pos.y;
+  let playerX = player.props.pos!.x;
+  let playerY = player.props.pos!.y;
   const playerWidth = player.props.img?.width || 0;
   const playerHeight = player.props.img?.height || 0;
 
@@ -39,7 +39,7 @@ export function checkCollision(
   const isOverlapX = (x1: number, x2: number, width: number) => x1 + playerWidth >= x2 && x1 <= x2 + width;
   const isOverlapY = (y1: number, y2: number, height: number) => y1 <= y2 + height && y1 + halfPlayerHeight >= y2;
 
-  if (keys.running) {
+  if (gameKeys.running) {
     playerX += RUNNING_VELOCITY - DEFAULT_VELOCITY;
     playerY += RUNNING_VELOCITY - DEFAULT_VELOCITY;
     player.props.hold = RUNNING_SPRITE_HOLD;
@@ -47,7 +47,7 @@ export function checkCollision(
     player.props.hold = DEFAULT_SPRITE_HOLD;
   }
 
-  switch (keys.lastKey) {
+  switch (gameKeys.lastKey) {
     case 'w':
       return isOverlapX(playerX, boundX, 48) &&
              isOverlapY(playerY, boundY + ratio, 48 + ratio);
@@ -70,7 +70,7 @@ export function checkCollision(
 
 export function checkMove(sprite: Boundary | Sprite): void {
   const props = sprite.props;
-  props.velocity = keys.running ? RUNNING_VELOCITY : DEFAULT_VELOCITY;
+  props.velocity = gameKeys.running ? RUNNING_VELOCITY : DEFAULT_VELOCITY;
   
   if ('moving' in props) {
     props.moving = false;
@@ -78,17 +78,17 @@ export function checkMove(sprite: Boundary | Sprite): void {
 
   // KEYBOARD
   if (props.moveable) {
-    if (keys.w) props.pos.y += props.velocity || DEFAULT_VELOCITY;
-    if (keys.a) props.pos.x += props.velocity || DEFAULT_VELOCITY;
-    if (keys.d) props.pos.x -= props.velocity || DEFAULT_VELOCITY;
-    if (keys.s) props.pos.y -= props.velocity || DEFAULT_VELOCITY;
+    if (gameKeys.w) props.pos!.y += props.velocity || DEFAULT_VELOCITY;
+    if (gameKeys.a) props.pos!.x += props.velocity || DEFAULT_VELOCITY;
+    if (gameKeys.d) props.pos!.x -= props.velocity || DEFAULT_VELOCITY;
+    if (gameKeys.s) props.pos!.y -= props.velocity || DEFAULT_VELOCITY;
   }
 
   // SPRITE CHANGE
-  if (keys.w && 'img' in props && props.sprites) props.img = props.sprites.up;
-  if (keys.a && 'img' in props && props.sprites) props.img = props.sprites.left;
-  if (keys.d && 'img' in props && props.sprites) props.img = props.sprites.right;
-  if (keys.s && 'img' in props && props.sprites) props.img = props.sprites.down;
+  if (gameKeys.w && 'img' in props && props.sprites) props.img = props.sprites.up;
+  if (gameKeys.a && 'img' in props && props.sprites) props.img = props.sprites.left;
+  if (gameKeys.d && 'img' in props && props.sprites) props.img = props.sprites.right;
+  if (gameKeys.s && 'img' in props && props.sprites) props.img = props.sprites.down;
 
-  if ((keys.w || keys.a || keys.d || keys.s || (props as SpriteProps).animated) && 'moving' in props) props.moving = true;
+  if ((gameKeys.w || gameKeys.a || gameKeys.d || gameKeys.s || (props as SpriteProps).animated) && 'moving' in props) props.moving = true;
 }

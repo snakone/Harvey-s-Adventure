@@ -46,9 +46,9 @@ class Sprite {
 
   public draw(): void {
     context?.save();
-    context?.translate(this.props.pos.x + 24, this.props.pos.y + 24);
+    context?.translate(this.props.pos!.x + 24, this.props.pos!.y + 24);
     context?.rotate(this.props.rotation || 0);
-    context?.translate(-this.props.pos.x - 24, -this.props.pos.y - 24);
+    context?.translate(-this.props.pos!.x - 24, -this.props.pos!.y - 24);
     context!.globalAlpha = this.props.opacity !== undefined ? this.props.opacity : 1; 
     if (this.props.img && this.props.frames) {
       context?.drawImage(
@@ -57,8 +57,8 @@ class Sprite {
         (this.current || 0) * (this.props.img.height / this.props.frames),  // Y
         this.props.img.width,  // Width
         this.props.img.height / this.props.frames,  // Height
-        this.props.pos.x, // Offset
-        this.props.pos.y, 
+        this.props.pos!.x, // Offset
+        this.props.pos!.y, 
         (this.props.img.width) * (this.props.scale || 1),  // Scale
         (this.props.img.height / this.props.frames) * (this.props.scale || 1)
       );

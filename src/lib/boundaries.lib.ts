@@ -1,8 +1,8 @@
-import Boundary from "../classes/boundary";
+import Boundary from "../classes/boundary.class";
 import { createCollisionMap } from "../utils/collisions";
 import { RECT_WIDTH, RECT_HEIGHT } from "../utils/constants";
 import { BoundaryProps } from "../utils/interfaces";
-import { OFFSET_X, OFFSET_Y } from "./sprites";
+import { OFFSET_X, OFFSET_Y } from "./sprites.lib";
 
 const BOUNDARIES: Boundary[] = buildBoundaries();
 

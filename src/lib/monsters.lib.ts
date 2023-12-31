@@ -1,16 +1,13 @@
-import { canvas } from "../classes/canvas";
-import Sprite from "../classes/sprites";
-import { DEFAULT_ALLY_SPRITE_Y, DEFAULT_ENEMY_SPRITE_Y } from "../utils/constants";
+import Sprite from "../classes/sprites.class";
+import { MONSTERS_ENUM, MONSTER_GENDER_ENUM } from "../utils/enums";
 import { MonsterProps } from "../utils/interfaces";
 import { MONSTER_ATTACKS } from "./attacks";
 
 export const DRAGGLE_MONSTER_SPRITE: MonsterProps = {
-  pos: {x: canvas.width + 48, y: DEFAULT_ENEMY_SPRITE_Y},
   src: 'images/draggleSpriteFront.png',
   frames: 4,
   animated: true,
   hold: 35,
-  enemy: true,
   scale: .5,
   sprites:{ 
     front: Sprite.createImage('images/draggleSpriteFront.png'),
@@ -19,19 +16,17 @@ export const DRAGGLE_MONSTER_SPRITE: MonsterProps = {
   stats: {
     name: 'Draggle',
     level: 3,
-    gender: 'female',
+    gender: MONSTER_GENDER_ENUM.FEMALE,
     givenExp: 100
   },
   attacks: [MONSTER_ATTACKS.Tackle, MONSTER_ATTACKS.Fireball]
 };
 
 export const EMBY_MONSTER_SPRITE: MonsterProps = {
-  pos: {x: -48, y: DEFAULT_ALLY_SPRITE_Y},
   src: 'images/embySpriteBack.png',
   frames: 4,
   animated: true,
   hold: 15,
-  ally: true,
   scale: .5,
   sprites:{ 
     front: Sprite.createImage('images/embySpriteFront.png'),
@@ -40,10 +35,17 @@ export const EMBY_MONSTER_SPRITE: MonsterProps = {
   stats: {
     name: 'Emby',
     level: 5,
-    gender: 'male',
+    gender: MONSTER_GENDER_ENUM.MALE,
     givenExp: 30,
     totalExp: 10
   },
   attacks: [MONSTER_ATTACKS.Tackle, MONSTER_ATTACKS.Fireball]
 };
+
+export const MONSTER_LIBRARY:{[key in MONSTERS_ENUM]: MonsterProps} = {
+  Emby: EMBY_MONSTER_SPRITE,
+  Draggle: DRAGGLE_MONSTER_SPRITE
+};
+
+Object.values(MONSTER_LIBRARY).forEach(monster => Object.freeze(monster));
 

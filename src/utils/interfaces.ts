@@ -1,4 +1,4 @@
-import { MonsterAttack } from "../lib/attacks";
+import { ATTACK_ENUMS, BATTLE_SPRITE_POSITION_ENUM, BOUNDRY_TYPE_ENUM, ELEMENTALS_ENUM, MONSTER_GENDER_ENUM } from "./enums";
 
 export interface Coords {
   x: number;
@@ -6,7 +6,7 @@ export interface Coords {
 }
 
 export interface SpriteProps {
-  pos: Coords, // Position
+  pos?: Coords, // Position
   src: string | undefined,
   img?: HTMLImageElement | undefined,
   scale?: number,
@@ -14,7 +14,7 @@ export interface SpriteProps {
   moveable?: boolean, // Can Sprite Move?
   velocity?: number, // Move Velocity
   moving?: boolean, // Actually Moving
-  sprites?: {[key: string]: HTMLImageElement};
+  sprites?: Partial<{[key in BATTLE_SPRITE_POSITION_ENUM]: HTMLImageElement}>;
   animated?: boolean, // Monster Animation Default,
   hold?: number,
   opacity?: number // Battle Opacity
@@ -22,8 +22,6 @@ export interface SpriteProps {
 }
 
 export interface MonsterProps extends SpriteProps {
-  enemy?: boolean, // Sprite is Enemy
-  ally?: boolean, // Sprite is Ally
   stats?: MonsterStats,
   attacks?: MonsterAttack[],
 }
@@ -34,13 +32,13 @@ export interface BoundaryProps {
   height?: number,
   velocity?: number, // Move Velocity
   moveable?: boolean, // Can Sprite Move?
-  type: 'wall' | 'battle'
+  type: BOUNDRY_TYPE_ENUM
 }
 
 export interface MonsterStats {
   health?: number;
   level?: number;
-  gender: 'male' | 'female',
+  gender: MONSTER_GENDER_ENUM,
   name: string;
   dead?: boolean;
   givenExp?: number; // EXP given upon defeat
@@ -49,4 +47,10 @@ export interface MonsterStats {
 
 export interface AttackFunction {
   (): void;
+}
+
+export interface MonsterAttack {
+  name: ATTACK_ENUMS;
+  power: number;
+  type: ELEMENTALS_ENUM;
 }

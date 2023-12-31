@@ -1,8 +1,9 @@
-import Boundary from "../classes/boundary";
-import { createBattleZonesMap } from "../utils/battle_zones";
+import Boundary from "../classes/boundary.class";
+import { createBattleZonesMap } from "../utils/battle_zones.utils";
 import { RECT_WIDTH, RECT_HEIGHT } from "../utils/constants";
+import { BOUNDRY_TYPE_ENUM } from "../utils/enums";
 import { BoundaryProps } from "../utils/interfaces";
-import { OFFSET_X, OFFSET_Y } from "./sprites";
+import { OFFSET_X, OFFSET_Y } from "./sprites.lib";
 
 const BATTLE_ZONES: Boundary[] = buildBattleZones();
 
@@ -19,7 +20,7 @@ export function buildBattleZones(): Boundary[] {
             y: i * RECT_HEIGHT + OFFSET_Y
           },
           moveable: true,
-          type: 'battle'
+          type: BOUNDRY_TYPE_ENUM.BATTLE
         }
         array.push(new Boundary(boundary));
       }

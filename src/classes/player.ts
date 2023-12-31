@@ -1,13 +1,13 @@
-import Monster from "./monsters";
-import Sprite from "./sprites";
+import Monster from "./monsters.class";
+import Sprite from "./sprites.class";
 
 class Player {
   team: Monster[] = [];
 
   constructor(public sprite: Sprite) {}
 
-  public createTeam(monsters: Monster[]): void {
-    this.team = monsters;
+  public createTeam(...monsters: Monster[]): void {
+    this.team = [...monsters];
 
     if(this.team.length > 0) {
       this.team[0].selected = true;

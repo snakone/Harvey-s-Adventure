@@ -1,5 +1,5 @@
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from "../classes/canvas";
-import Sprite from "../classes/sprites";
+import Sprite from "../classes/sprites.class";
 import { SpriteProps } from "../utils/interfaces";
 export const OFFSET_X = -760;
 export const OFFSET_Y = -550;

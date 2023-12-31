@@ -1,4 +1,4 @@
-import { keys } from "./keyboard.js";
+import { gameKeys } from "./keyboard.js";
 
 export const GAME_PADS: {[key: number]: Gamepad | null} = {};
 
@@ -32,17 +32,17 @@ export function scanGamePads() {
   GAME_PADS[0]?.buttons.forEach((button, i) => {
     if (!validKeys.includes(i)) return;
     if(button.pressed) {
-      keys[CONTROLLER_KEY_MAP[i]] = true;
-      keys.lastKey = CONTROLLER_KEY_MAP[i];
+      gameKeys[CONTROLLER_KEY_MAP[i]] = true;
+      gameKeys.lastKey = CONTROLLER_KEY_MAP[i];
     } else {
-      keys[CONTROLLER_KEY_MAP[i]] = false;
+      gameKeys[CONTROLLER_KEY_MAP[i]] = false;
     }
   });
 
   GAME_PADS[0]?.buttons
-  .filter((_: GamepadButton, i: number) => i === 0 && keys.lastKey === ' ')
+  .filter((_: GamepadButton, i: number) => i === 0 && gameKeys.lastKey === ' ')
   .forEach((button: GamepadButton) => {
-    keys.running = button.pressed;
+    gameKeys.running = button.pressed;
   });
 }
 
