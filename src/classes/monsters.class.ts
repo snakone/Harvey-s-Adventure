@@ -5,21 +5,24 @@ import gsap from "gsap";
 import { ATTACK_ANIMATIONS } from "../lib/attacks";
 import { ATTACK_ENUMS, BATTLE_SPRITE_POSITION_ENUM, MONSTER_GENDER_ENUM } from "../utils/enums";
 import { setLastMonsterAttacked, canCloseBattleDialog, setCanCloseBattleDialog } from "../utils/setters";
+import { stopBattleAndStartVictoryAudio } from "../lib/audio.lib";
+import { returnToMap } from "../utils/functions";
 
 import { 
-  ATTACK_QUEUE as BATTLE_QUEUE,
+  BATTLE_QUEUE as BATTLE_QUEUE,
   animateExpBar,
   endBattle,
-  returnToMap,
-  showBattleDialog
+  showDialogAfterAttack
 } from "../utils/battle_field";
 
 import { 
+  BATTLE_LOOP_TIME,
   CLICK_HERE_BATTLE_DIALOG_IMAGE,
   DEFAULT_ALLY_BATTLE_POSITION, 
   DEFAULT_ALLY_SPRITE_X, 
   DEFAULT_ENEMY_BATTLE_POSITION,
-  DEFAULT_ENEMY_SPRITE_X, 
+  DEFAULT_ENEMY_SPRITE_X,
+  DEFAULT_MONSTER_SCALE, 
 } from "../utils/constants";
 
 class Monster extends Sprite {
@@ -28,15 +31,14 @@ class Monster extends Sprite {
   enemy = false;
 
   constructor({
-    pos, src, frames = 0, scale = 1, velocity = 3, moveable = false, 
+    pos, src, frames = 0, scale = DEFAULT_MONSTER_SCALE, velocity = 3, moveable = false, name = '', 
     moving = false, sprites, animated = false, hold = 15, opacity = 1, attacks = [],
     stats = {
       health: 100,
-      level: 1,
+      level: Math.floor(Math.random() * (5 - 3 + 1) + 3),
       gender: Math.random() <= 0.5 ? MONSTER_GENDER_ENUM.MALE : MONSTER_GENDER_ENUM.FEMALE,
-      name: '',
       dead: false,
-      givenExp: 10,
+      givenExp: 100,
       totalExp: 0
     }
   }: MonsterProps, enemy: boolean) {
@@ -48,13 +50,19 @@ class Monster extends Sprite {
       pos, src, frames, scale, 
       img: Sprite.createImage(src),
       moveable, velocity, moving, sprites, animated, 
-      hold, opacity, stats, attacks
+      hold, opacity, attacks, name,
+      stats: {
+        ...stats,
+        health: 100,
+        level: Math.floor(Math.random() * (6 - 3 + 1) + 3),
+        gender: Math.random() <= 0.5 ? MONSTER_GENDER_ENUM.MALE : MONSTER_GENDER_ENUM.FEMALE,
+        dead: false,
+      }
     };
 
     // ASSIGN STATS RESET ON AFTER EVERY BATTLE
     this.enemy = enemy;
-    this.props.stats!.health = 100;
-    this.props.stats!.dead = false;
+    this.props.name = name;
     this.current = 0;
     this.elapsed = 0;
     this.selected = false;
@@ -84,10 +92,20 @@ class Monster extends Sprite {
       this.props.stats?.dead
     ) { return; }
 
+    if (recipent.props.stats!.health! <= 0) {
+      recipent.faint();
+      return;
+    }
+
+    if(this.props.stats!.health! <= 0) {
+      this.faint();
+      return;
+    }
+
     this.attacking = true;
     recipent.attacking = true;
     recipent.props.stats!.health! -= data.power;
-    showBattleDialog(data, this.props.stats!.name);
+    showDialogAfterAttack(data, this.props!.name);
     setLastMonsterAttacked(this);
 
     const healthBarClass = recipent.enemy ? '.health-bar-enemy.green' : '.health-bar-ally.green';
@@ -108,6 +126,12 @@ class Monster extends Sprite {
          .Fireball();
         break;
       }
+
+      case ATTACK_ENUMS.ICE_SHOT: {
+        ATTACK_ANIMATIONS(this, recipent, tl, xBounce, yBounce, recoil, healthBarClass)
+         .IceShot();
+        break;
+      }
     }
   }
 
@@ -124,7 +148,7 @@ class Monster extends Sprite {
     if(this.props.stats?.dead) { return; }
 
     if(dialogRef) { 
-      dialogRef.innerHTML = `${this.props.stats?.name} fainted!
+      dialogRef.innerHTML = `<strong>${this.props?.name}</strong> fainted!
       ${CLICK_HERE_BATTLE_DIALOG_IMAGE}`;
     }
 
@@ -133,25 +157,33 @@ class Monster extends Sprite {
 
     const tl = gsap.timeline();
     
-    gsap.to(this.props.pos!, { y: this.props.pos!.y + 20});
-    tl.to(this.props, { opacity: 0 })
+    gsap.to(this.props.pos!, { y: this.props.pos!.y + 20, duration: 0.8 });
+    tl.to(this.props, { opacity: 0, duration: 0.7 })
       .to(this.props.pos!, { y: this.props.pos!.y})
       .then(_ => {
         if(this.enemy) {
           // EXP DIALOG
           BATTLE_QUEUE.push(() => {
-            dialogRef!.innerHTML = `${this.props.stats?.name} gained 
+            dialogRef!.innerHTML = `<strong>${this.props?.name}</strong> gained 
             <strong>${this!.props.stats?.givenExp}</strong> experience points!
               ${CLICK_HERE_BATTLE_DIALOG_IMAGE}`;
           });
-    
+
+          setTimeout(() => stopBattleAndStartVictoryAudio(), 500);
+
           BATTLE_QUEUE.push(() => {
             animateExpBar(this!.props.stats?.givenExp!);
           });
-        } else {
-            dialogRef!.innerHTML = `${this.props.stats?.name} fainted!
-            ${CLICK_HERE_BATTLE_DIALOG_IMAGE}`;
+
+          setTimeout(() => {
             setCanCloseBattleDialog(true);
+          }, BATTLE_LOOP_TIME);
+        } else {
+            dialogRef!.innerHTML = `<strong>${this.props?.name}</strong> fainted!
+            ${CLICK_HERE_BATTLE_DIALOG_IMAGE}`;
+            setTimeout(() => {
+              setCanCloseBattleDialog(true);
+            }, BATTLE_LOOP_TIME);
         }
     });
   }

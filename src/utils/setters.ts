@@ -26,7 +26,7 @@ export function setLastMonsterAttacked(monster: Monster): void {
 /**
  * Set if the Keyboard can be used given the value.
  * 
- * Prevents random Events
+ * Prevents Random/Multiple Keyboard Events
  * @param {boolean} value:boolean
  * @returns {void}
  */

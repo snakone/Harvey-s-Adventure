@@ -15,13 +15,13 @@ const BACKGROUND_SPRITE: SpriteProps = {
 
 const PLAYER_SPRITE: SpriteProps = {
   pos: {x: (DEFAULT_WIDTH / 2) - IMAGE_WIDTH / 4, y: (DEFAULT_HEIGHT / 2) + 40},
-  src: 'images/playerDown.png',
+  src: 'images/playerDown2.png',
   frames: 4,
   sprites: {
-    up: Sprite.createImage('images/playerUp.png'),
-    down: Sprite.createImage('images/playerDown.png'),
-    left: Sprite.createImage('images/playerLeft.png'),
-    right: Sprite.createImage('images/playerRight.png')
+    up: Sprite.createImage('images/playerUp2.png'),
+    down: Sprite.createImage('images/playerDown2.png'),
+    left: Sprite.createImage('images/playerLeft2.png'),
+    right: Sprite.createImage('images/playerRight2.png')
   }
 };
 
@@ -38,20 +38,6 @@ const BATTLE_BACKGROUND_SPRITE: SpriteProps = {
   frames: 1
 };
 
-const FIREBALL_ATTACK_SPRITE: SpriteProps = {
-  pos: {x: 0, y: 0},
-  src: 'images/fireball.png',
-  frames: 4,
-  animated: true
-};
-
-const FIREBALL_ROTATED_ATTACK_SPRITE: SpriteProps = {
-  pos: {x: 0, y: 0},
-  src: 'images/fireball_rotated.png',
-  frames: 4,
-  animated: true
-};
-
 export const SPRITES: Sprite[] = [
   new Sprite(BACKGROUND_SPRITE),
   new Sprite(PLAYER_SPRITE),
@@ -62,9 +48,5 @@ export const BATTLE_SPRITES: Sprite[] = [
   new Sprite(BATTLE_BACKGROUND_SPRITE),
 ];
 
-export const ATTACK_SPRITES: Sprite[] = [
-  new Sprite(FIREBALL_ATTACK_SPRITE),
-  new Sprite(FIREBALL_ROTATED_ATTACK_SPRITE)
-];
 
 

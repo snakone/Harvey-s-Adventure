@@ -1,7 +1,7 @@
 import Monster from "../classes/monsters.class";
 import { enemy } from "./battle_field";
 import { ELEMENTALS_ENUM, SWITCH_COLOR_TYPE } from "./enums";
-import { character } from "./functions";
+import { character } from ".";
 
 /**
 * Creates 2 HTML boxes for the Battle. Contains the following:
@@ -93,12 +93,11 @@ function createAttackButton(text: string, value: string, type?: ELEMENTALS_ENUM)
  * @returns {HTMLElement}
  */
 function addMonsterStats(current: Monster): HTMLElement {
-  const { name, level, gender } = current.props.stats || {};
+  const { level, gender } = current.props.stats || {};
   const genderSrc = `/images/${gender}.png`;
   const el = document.createElement('div');
   el.classList.add('battle-enemy-stats');
-  el.innerHTML = `<h2>${name}</h2> <span>Lv.${level}</span> <img src="${genderSrc}"/>`;
-
+  el.innerHTML = `<h2>${current.props.name}</h2> <span>Lv.${level}</span> <img src="${genderSrc}"/>`;
   return el;
 }
 

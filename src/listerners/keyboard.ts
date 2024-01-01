@@ -1,5 +1,6 @@
 import { battleMap } from "../utils/battle_field";
 import { keyBoardDisabled } from "../utils/setters";
+import { playFirstAudio } from "./audio.listeners";
 
 export const gameKeys: {[key: string]: boolean | string} = {
   a: false,
@@ -18,14 +19,14 @@ export function listenKeyboard(): void {
     if(e.key === ' ') gameKeys.running = true;
     gameKeys[e.key] = true;
     gameKeys.lastKey = e.key;
+    playFirstAudio();
   };
 
   const handleKeyUp = (e: KeyboardEvent): void => {
     if(battleMap.initilized) { return; }
+    if(e.key === ' ') gameKeys.running = false;
     if(!validKeys.includes(e.key)) return;
     gameKeys[e.key] = false;
-    if(keyBoardDisabled) { return; }
-    if(e.key === ' ') gameKeys.running = false;
   };
 
   window.addEventListener('keydown', handleKeyDown);

@@ -16,7 +16,9 @@
     "vite": "^5.0.8"
   },
   "dependencies": {
+    "@types/howler": "^2.2.11",
     "gsap": "^3.12.4",
+    "howler": "^2.2.4",
     "rxjs": "^7.8.1"
   }
 }

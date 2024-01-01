@@ -23,6 +23,7 @@ export interface SpriteProps {
 
 export interface MonsterProps extends SpriteProps {
   stats?: MonsterStats,
+  name: string;
   attacks?: MonsterAttack[],
 }
 
@@ -39,7 +40,6 @@ export interface MonsterStats {
   health?: number;
   level?: number;
   gender: MONSTER_GENDER_ENUM,
-  name: string;
   dead?: boolean;
   givenExp?: number; // EXP given upon defeat
   totalExp?: number; // Total Monster EXP

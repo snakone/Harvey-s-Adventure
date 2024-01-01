@@ -1,18 +1,19 @@
 import gsap from "gsap";
 import Monster from "../classes/monsters.class";
 import Sprite from "../classes/sprites.class";
-import { animate, character } from "./functions";
-import { AttackFunction, MonsterAttack, MonsterProps } from "./interfaces";
+import { animate, character } from ".";
+import { AttackFunction, MonsterAttack } from "./interfaces";
 import { BATTLE_SPRITES } from "../lib/sprites.lib";
 import { context, canvas } from "../classes/canvas";
 import { MONSTER_LIBRARY } from "../lib/monsters.lib";
-import { MONSTERS_ENUM } from "./enums";
 import { BATTLE_LOOP_TIME, CLICK_HERE_BATTLE_DIALOG_IMAGE } from "./constants";
 import { createHTMLMonsterBox, createAttacksByMonster } from "./crafter";
 import { setKeyBoardCanbeUsed, setCanCloseBattleDialog, canCloseBattleDialog, lastMonsterAttacked } from "./setters";
-import { listenerBattlePanel, listenerFightPanel, listenerBattleQueue } from "../listerners/battle_field_listeners";
+import { listenerBattlePanel, listenerFightPanel, listenerBattleQueue } from "../listerners/battle_field.listeners";
+import { stopBattleAndStartMapAudio, stopMapAndStartBattleAudio, stopVictoryAndStartLevelUpAudio } from "../lib/audio.lib";
+import { canMonsterScape, getRandomMonster, pushAttackToQueue, returnToMap } from "./functions";
 
-export let ATTACK_QUEUE: AttackFunction[] = [];
+export let BATTLE_QUEUE: AttackFunction[] = [];
 export let BATTLE_MOVABLES: Sprite[] | Monster[] = [];
 
 export let enemy: Monster | undefined;
@@ -72,6 +73,7 @@ function checkBattleSprites(): void {
  * @returns {void}
  */
 export function activeBattle(animationLoop: number): void {
+  stopMapAndStartBattleAudio();
   setKeyBoardCanbeUsed(false);
   window.cancelAnimationFrame(animationLoop);
   activeBattleAnimation();
@@ -88,14 +90,14 @@ export function activeBattle(animationLoop: number): void {
 }
 
 /**
- * Reset the previous Battles values
+ * Reset the previous Battle Stat values
  * - Creates a new Ally if doesn't exist
  * - Creates a new Enemy
  * - Clears the Battle Queue
  * - Set Battle Sprites
  * @returns {void}
  */
-export function resetBattle(): void {
+export function resetBattleStats(): void {
   let oldMonsterDead = character.selectedMonster.props.stats?.dead;
   if (oldMonsterDead) { character.createTeam(new Monster(MONSTER_LIBRARY.Emby, false)); }
   enemy = new Monster(getRandomMonster(), true);
@@ -114,10 +116,11 @@ export function resetBattle(): void {
  * @returns {void}
  */
 export function checkQueue(dialog: HTMLElement): void {
-  if (ATTACK_QUEUE.length > 0) {
-      ATTACK_QUEUE[0]();
-      ATTACK_QUEUE.shift();
-  } else if(canCloseBattleDialog) {
+  const monster = character.selectedMonster;
+  if (BATTLE_QUEUE.length > 0) {
+      BATTLE_QUEUE[0]();
+      BATTLE_QUEUE.shift();
+  } else if(canCloseBattleDialog || lastMonsterAttacked?.enemy) {
     dialog.style.display = 'none';
     setCanCloseBattleDialog(false);
   }
@@ -131,16 +134,20 @@ export function checkQueue(dialog: HTMLElement): void {
  * 
  * Returns if no battleAnimationLoop is present
  * @see {@link animate}
+ * @see {@link stopBattleAndStartMapAudio}
+ * @see {@link goBackToBattleMenu}
+ * @see {@link setKeyBoardCanbeUsed}
  * @returns {void}
  */
 export function endBattle(): void {
   if (!battleAnimationLoop) return;
+  window.cancelAnimationFrame(battleAnimationLoop);
+  stopBattleAndStartMapAudio();
   character.selectedMonster.restartMonsterBattlePosition();
   enemy?.restartMonsterBattlePosition();
   enemy = undefined;
   battleMap.initilized = false;
   goBackToBattleMenu();
-  window.cancelAnimationFrame(battleAnimationLoop);
   battleAnimationLoop = null;
   setKeyBoardCanbeUsed(true);
   animate();
@@ -169,53 +176,6 @@ export function showFightPanel(): void {
 }
 
 /**
-* Push a new Attack to the Queue
-* @param {Monster} attacker - The Monster who perform the Attack
-* @param {Monster} recipent - The Monster who recieves the Attack
-* 
-* The Attack will be Randomized
-* @returns {void}
-*/
-export function pushAttackToQueue(
-  attacker: Monster,
-  recipent: Monster
-): void {
-  if(!attacker || !recipent) {return; }
-  
-  const random = Math.floor(Math.random() * attacker.props.attacks!.length || 1);
-  const randomAttack = attacker.props.attacks![0];
-  ATTACK_QUEUE.push(() => {
-    attacker.attack({
-      data: randomAttack,
-      recipent
-    });
-  });
-}
-
-/**
-* Performs an Attack to a Monster
-* @param {Monster} attacker
-* The Monster who perform the Attack
-* @param {Monster} recipent
-* The Monster who recieves the Attack
-* @param {MonsterAttack} data
-* Attack Data
-* @returns {void}
-*/
-export function performAttack(
-  attacker: Monster,
-  recipent: Monster,
-  data: MonsterAttack
-): void {
-  if(!attacker || !recipent) {return; }
-
-  attacker.attack({
-    data,
-    recipent
-  });
-}
-
-/**
  * Show the Panel after a Monster Attack
  * - (Monster name) used (Attack Name)
  * @param {MonsterAttack} data - Attack Data
@@ -223,7 +183,7 @@ export function performAttack(
  * @template #info-battle-dialog
  * @returns {void}
  */
-export function showBattleDialog(data: MonsterAttack, name: string): void {
+export function showDialogAfterAttack(data: MonsterAttack, name: string): void {
   const dialogRef = document.getElementById('info-battle-dialog');
 
   if (dialogRef) {
@@ -252,29 +212,12 @@ export function goBackToBattleMenu(): void {
 }
 
 /**
- * Return to Map Transition. Removes:
- * 
- * - Both Monster Info Panels
- * - Fade out the Battle Panel
- * - Removes the 'active' class from Battle Transition
- * @returns {void}
- * @template #battle-transition
- */
-export function returnToMap(): void {
-  gsap.to('.battle-panel-enemy', { display: 'none', duration: 0 });
-  gsap.to('.battle-panel-ally', { display: 'none', duration: 0 });
-  gsap.to('#battle-panel', { opacity: 0, duration: 0 });
-
-  const battle = document.getElementById('battle-transition');
-  if (battle) { battle.classList.remove('active'); }
-}
-
-/**
- * Animate the Monster Exp Bar after defeating an Enemy
+ * Animate the Monster Exp Bar after defeating an Enemy.
  * 
  * - Handles if the Monster has Level Up
  * @param {number} amount - Translates to %
  * @template #exp-bar-blue
+ * @see {@link handleLevelUp}
  * @returns {void}
  */
 export function animateExpBar(amount: number): void {
@@ -296,11 +239,10 @@ export function animateExpBar(amount: number): void {
       }
 
       if(value >= 100) {
-        ATTACK_QUEUE.push(() => {
+        BATTLE_QUEUE.push(() => {
+          stopVictoryAndStartLevelUpAudio();
           handleLevelUp(monster.props.stats?.level!);
         });
-
-        return;
       }
     }
   });
@@ -311,6 +253,8 @@ export function animateExpBar(amount: number): void {
  * Display on the Battle Panel - Monster has grew 1 level.
  * 
  * Creates the HTML Monster Boxes again.
+ * 
+ * Will Close the Battle Dialog
  * @param {number} level - The Level the Monster has reached
  * @template #info-battle-dialog
  * @returns {any}
@@ -321,27 +265,26 @@ export function handleLevelUp(level: number): void {
 
   if (dialogRef && monster) {
     dialogRef.style.display = 'block';
-    dialogRef.innerHTML = `<strong>${monster.props.stats?.name}</strong> grew to level ${level}!
+    dialogRef.innerHTML = `<strong>${monster.props?.name}</strong> grew to level ${level}!
      ${CLICK_HERE_BATTLE_DIALOG_IMAGE}`;
 
-      setTimeout(() => {
-        setCanCloseBattleDialog(true);
-      }, BATTLE_LOOP_TIME * 2);
-
+    setTimeout(() => setCanCloseBattleDialog(true), BATTLE_LOOP_TIME * 2);
     createHTMLMonsterBox();
   }
 }
 
 /**
- * Adds the class 'active' to start the Battle Animation
+ * Adds the class 'active' to start the Battle Animation.
+ * 
+ * Reset the Battle Stats
  * @template '#battle-transition'.
- * @function resetBattle
+ * @see {@link resetBattleStats}
  * @returns {void}
  */
 function activeBattleAnimation(): void {
   const battle = document.getElementById('battle-transition');
   if (battle) { battle.classList.add('active'); }
-  resetBattle();
+  resetBattleStats();
 }
 
 /**
@@ -349,7 +292,7 @@ function activeBattleAnimation(): void {
  * @returns {void}
  */
 export function clearBattleQueue(): void {
-  ATTACK_QUEUE = [];
+  BATTLE_QUEUE = [];
 }
 
 /**
@@ -365,24 +308,13 @@ export function showNewMonsterAppeared(monster: Monster): void {
 
   if(dialogRef) {
     dialogRef.style.display = 'block';
-    dialogRef.innerHTML = `A wild <strong>${monster?.props.stats?.name}</strong> appeared!
+    dialogRef.innerHTML = `A wild <strong>${monster?.props?.name}</strong> appeared!
      ${CLICK_HERE_BATTLE_DIALOG_IMAGE}`;
 
     setTimeout(() => {
       setCanCloseBattleDialog(true);
     }, BATTLE_LOOP_TIME);
   }
-}
-
-/**
- * Return a Random MonsterProps
- * @see {@link Monster}
- * @returns {MonsterProps}
- */
-export function getRandomMonster(): MonsterProps {
-  const keys = Object.keys(MONSTER_LIBRARY) as MONSTERS_ENUM[];
-  const randomKey = keys[Math.floor(Math.random() * keys.length)];
-  return MONSTER_LIBRARY.Draggle;
 }
 
 /**
@@ -397,5 +329,56 @@ function battleListeners(): void {
   listenerFightPanel();
   listenerBattleQueue();
 }
+
+/**
+ * Show can Scape Dialog. Calculates if the Monster can Scape.
+ * 
+ * Can end the Battle.
+ * @see {@link canMonsterScape}
+ * @see {@link showCannotScapedDialog}
+ * @returns {void}
+ */
+export function showDialogScape(): void {
+  const dialogRef = document.getElementById('info-battle-dialog');
+  const canScape = canMonsterScape(enemy!);
+
+  if(!canScape) {
+    showCannotScapedDialog();
+    return;
+  }
+
+  if(dialogRef) {
+    dialogRef.style.display = 'block';
+    dialogRef.innerHTML = `You've escape successfully!
+     ${CLICK_HERE_BATTLE_DIALOG_IMAGE}`;
+
+     BATTLE_QUEUE.push(() => {
+      setCanCloseBattleDialog(true);
+      endBattle();
+      returnToMap();
+    });
+  }
+}
+
+/**
+ * Show cannot Scape Dialog and Push an Enemy Attack to the Queue.
+ * @see {@link pushAttackToQueue}
+ * @template #info-battle-dialog
+ * @returns {void}
+ */
+function showCannotScapedDialog(): void {
+  const dialogRef = document.getElementById('info-battle-dialog');
+  const monster = character.selectedMonster;
+
+  if(!dialogRef || !monster || !enemy) { return; }
+
+  dialogRef.style.display = 'block';
+    dialogRef.innerHTML = `What!? You couldn't scape!
+    ${CLICK_HERE_BATTLE_DIALOG_IMAGE}`;
+
+  pushAttackToQueue(enemy, monster);
+}
+
+
 
 

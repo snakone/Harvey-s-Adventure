@@ -1,3 +1,3 @@
-import { start } from "./utils/functions";
+import { start } from "./utils";
 
 start();

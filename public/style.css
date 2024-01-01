@@ -19,14 +19,11 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-image: url('/images/bg.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 canvas {
   width: 100%;
-  border: 4px solid black;
+  border: 4px solid #ccc;
 }
 
 main {
@@ -40,7 +37,7 @@ main {
 
 .title {
   font-family: 'Poke';
-  font-size: 115px;
+  font-size: 75px;
   margin: 2rem auto;
   color: rgb(255, 216, 39);
   -webkit-text-stroke: 1px rgb(67, 86, 180);
@@ -73,7 +70,7 @@ main {
   height: 165px;
   background-color: white;
   opacity: 0;
-  border: 4px black solid;
+  border: 4px #ccc solid;
 }
 
 #battle-panel h1 {
@@ -96,7 +93,7 @@ main {
   background-color: #ccc;
   height: 100%;
   max-height: 80px;
-  border-radius: 12px;
+  border-radius: 4px;
   font-size: 20px;
   cursor: pointer;
   text-transform: uppercase;
@@ -116,13 +113,13 @@ main {
   column-gap: 16px;
   row-gap: 8px;
   padding: 16px;
-  border-bottom: 4px black solid;
+  border-bottom: 4px #ccc solid;
 }
 
 .battle-fight-panel button {
   background-color: #ccc;
   height: 100%;
-  border-radius: 12px;
+  border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
   text-transform: uppercase;
@@ -149,7 +146,7 @@ main {
   height: 80px;
   background-color: white;
   border-radius: 4px;
-  border: 3px black solid;
+  border: 3px #ccc solid;
   display: none;
   padding: 16px;
 }
@@ -211,13 +208,13 @@ main {
 }
 
 .exp-bar {
-  background-color: #ccc;
+  background-color: #4b4646;
 }
 
 .exp-bar-blue {
   top: calc(-12px - 4px - 6px);
   width: 0;
-  background-color: #0858b9;
+  background-color: #08b9a1;
 }
 
 #info-battle-dialog {
@@ -238,7 +235,7 @@ main {
   right: 24px;
   display: block;
   bottom: 14px;
-  width: 32px;
+  width: 24px;
 }
 
 @keyframes flash {

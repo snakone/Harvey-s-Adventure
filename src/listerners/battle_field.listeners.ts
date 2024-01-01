@@ -1,20 +1,18 @@
 import { fromEvent, throttleTime } from "rxjs";
 import { SWITCH_ATTACK_NAME } from "../lib/attacks";
 import { ATTACK_ENUMS } from "../utils/enums";
-import { character } from "../utils/functions";
+import { character } from "../utils";
 import { MonsterAttack } from "../utils/interfaces";
 
 import { 
   showFightPanel, 
-  endBattle, 
-  returnToMap, 
   enemy, 
   checkQueue, 
-  performAttack, 
-  pushAttackToQueue, 
-  goBackToBattleMenu 
+  goBackToBattleMenu, 
+  showDialogScape
 } from "../utils/battle_field";
 import { BATTLE_LOOP_TIME } from "../utils/constants";
+import { performAttack, pushAttackToQueue } from "../utils/functions";
 
 /**
  * Listen for clicks on Battle Selection
@@ -35,11 +33,11 @@ export function listenerBattlePanel(): void {
     const battleName: string = battlePanelEv.target.tagName;
     const battleValue: string = battlePanelEv.target.value;
   
-    if (battleName === 'BUTTON' && battleValue === 'true') {
+    if (battleName === 'BUTTON' && battleValue === 'fight') {
       showFightPanel();
-    } else if(battleName === 'BUTTON' && battleValue === 'false') {
-      endBattle();
-      returnToMap();
+    } else if(battleName === 'BUTTON' && battleValue === 'scape') {
+      
+      showDialogScape();
     }
   });
 }
@@ -63,10 +61,12 @@ export function listenerBattleQueue(): void {
     if (enemy && enemy!.props.stats!.health! <= 0) {
       enemy!.attacking = false;
       enemy!.faint();
+      return;
 
     } else if (monster?.props.stats!.health! <= 0) {
       monster!.attacking = false;
       monster!.faint();
+      return;
     }
 
     checkQueue(dialogRef!);

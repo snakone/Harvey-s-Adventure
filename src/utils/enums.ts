@@ -1,25 +1,29 @@
 export enum ATTACK_ENUMS {
   TACKLE = 'Tackle',
-  FIREBALL = 'Fireball'
+  FIREBALL = 'Fireball',
+  ICE_SHOT = 'IceShot'
 }
 
 export enum ELEMENTALS_ENUM {
   NORMAL = 'Normal',
   FIRE = 'Fire',
   ELECTRIC = 'Electric',
-  WATER = 'Water'
+  WATER = 'Water',
+  ICE = 'Ice'
 }
 
 export const SWITCH_COLOR_TYPE: {[key in ELEMENTALS_ENUM]: string} = {
   Normal: 'black',
   Fire: 'firebrick',
   Electric: 'yellow',
-  Water: 'darkcyan'
+  Water: 'darkcyan',
+  Ice: '#0da591'
 }
 
 export enum MONSTERS_ENUM {
   EMBY = 'Emby',
-  DRAGGLE = 'Draggle'
+  DRAGGLE = 'Draggle',
+  BUTTERFLOP = 'Butterflop'
 }
 
 export enum BATTLE_SPRITE_POSITION_ENUM {
